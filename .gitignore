@@ -43,3 +43,9 @@ jscripts/tiny_mce/plugins/xhtmlxtras/css/xhtmlxtras.css
 mychangelog.txt
 popup.css
 readme
+
+inlineconfig.cfm
+popup.cfm
+stylesheet.cfm
+templatepopup.cfm
+
