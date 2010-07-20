@@ -68,6 +68,9 @@
 		writeStartElement : function(n) {
 			var t = this;
 			
+			//FSfix: [BUG-3327]
+			n = n.replace(/=.*/g, '');
+			
 			t.node = t.node.appendChild(t.doc.createElement(n));
 		},
 
