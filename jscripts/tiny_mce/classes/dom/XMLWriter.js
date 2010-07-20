@@ -67,7 +67,7 @@
 		 */
 		writeStartElement : function(n) {
 			var t = this;
-
+			
 			t.node = t.node.appendChild(t.doc.createElement(n));
 		},
 
