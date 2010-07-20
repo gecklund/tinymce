@@ -40,6 +40,7 @@ jscripts/tiny_mce/plugins/safari/
 jscripts/tiny_mce/plugins/saveit/
 jscripts/tiny_mce/plugins/spellcheckernet/
 jscripts/tiny_mce/plugins/xhtmlxtras/css/xhtmlxtras.css
+jscripts/tiny_mce/plugins/advlink/link.cfm
 mychangelog.txt
 popup.css
 readme
