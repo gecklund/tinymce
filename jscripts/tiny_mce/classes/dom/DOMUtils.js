@@ -1789,6 +1789,9 @@
 			if (!n)
 				return [];
 
+			//FSfix: [BUG-4422]
+			//the fixes below may be IE6 only bugs - was not able to reproduce in IE7-8
+			/*
 			if (isIE) {
 				o = [];
 
@@ -1807,6 +1810,7 @@
 
 				return o;
 			}
+			*/
 
 			return n.attributes;
 		},
