@@ -1788,10 +1788,7 @@
 
 			if (!n)
 				return [];
-
-			//FSfix: [BUG-4422]
-			//the fixes below may be IE6 only bugs - was not able to reproduce in IE7-8
-			/*
+			
 			if (isIE) {
 				o = [];
 
@@ -1804,13 +1801,15 @@
 					o.push({specified : 1, nodeName : 'selected'});
 
 				// It's crazy that this is faster in IE but it's because it returns all attributes all the time
-				n.cloneNode(false).outerHTML.replace(/<\/?[\w:\-]+ ?|=[\"][^\"]+\"|=\'[^\']+\'|=[\w\-]+|>/gi, '').replace(/[\w:\-]+/gi, function(a) {
+				//n.cloneNode(false).outerHTML.replace(/<\/?[\w:\-]+ ?|=[\"][^\"]+\"|=\'[^\']+\'|=[\w\-]+|>/gi, '').replace(/[\w:\-]+/gi, function(a) {
+				//FSfix: [BUG-4422]
+				n.cloneNode(false).outerHTML.replace(/<\/?[\w:\-]+ ?|=[\"][^\"]+\"|=\'[^\']+\'|=[^ ]+|>/gi, '').replace(/[\w:\-]+/gi, function(a) {
 					o.push({specified : 1, nodeName : a});
 				});
 
 				return o;
 			}
-			*/
+			
 
 			return n.attributes;
 		},

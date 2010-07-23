@@ -15,10 +15,14 @@ function init() {
 	f = document.forms[0]
 
 	fe = ed.selection.getNode();
-	if (/mceItem(Flash|ShockWave|WindowsMedia|QuickTime|RealMedia)/.test(ed.dom.getAttrib(fe, 'class'))) {
+	if (/mceItem(FsMedia|Flash|ShockWave|WindowsMedia|QuickTime|RealMedia)/.test(ed.dom.getAttrib(fe, 'class'))) {
 		pl = fe.title;
 
 		switch (ed.dom.getAttrib(fe, 'class')) {
+			case 'mceItemFsMedia':
+				type = 'fsmedia';
+				break;
+
 			case 'mceItemFlash':
 				type = 'flash';
 				break;
@@ -66,6 +70,10 @@ function init() {
 		pl = tinyMCEPopup.editor.plugins.media._parse(pl);
 
 		switch (type) {
+			case "fsmedia":
+				setStr(pl, 'fsmedia', 'flashvars');
+			break;
+			
 			case "flash":
 				setBool(pl, 'flash', 'play');
 				setBool(pl, 'flash', 'loop');
@@ -191,8 +199,12 @@ function insertMedia() {
 	f.height.value = f.height.value == "" ? 100 : f.height.value;
 
 	fe = ed.selection.getNode();
-	if (fe != null && /mceItem(Flash|ShockWave|WindowsMedia|QuickTime|RealMedia)/.test(ed.dom.getAttrib(fe, 'class'))) {
+	if (fe != null && /mceItem(FsMedia|Flash|ShockWave|WindowsMedia|QuickTime|RealMedia)/.test(ed.dom.getAttrib(fe, 'class'))) {
 		switch (f.media_type.options[f.media_type.selectedIndex].value) {
+			case "fsmedia":
+				fe.className = "mceItemFsMedia";
+				break;
+
 			case "flash":
 				fe.className = "mceItemFlash";
 				break;
@@ -228,9 +240,14 @@ function insertMedia() {
 		fe.style.height = f.height.value + (f.height.value.indexOf('%') == -1 ? 'px' : '');
 		fe.align = f.align.options[f.align.selectedIndex].value;
 	} else {
+		
 		h = '<img src="' + tinyMCEPopup.getWindowArg("plugin_url") + '/img/trans.gif"' ;
 
 		switch (f.media_type.options[f.media_type.selectedIndex].value) {
+			case "fsmedia":
+				h += ' class="mceItemFsMedia"';
+				break;
+				
 			case "flash":
 				h += ' class="mceItemFlash"';
 				break;
@@ -352,7 +369,8 @@ function switchType(v) {
 
 function changedType(t) {
 	var d = document;
-
+	
+	d.getElementById('fsmedia_options').style.display = 'none';
 	d.getElementById('flash_options').style.display = 'none';
 	d.getElementById('flv_options').style.display = 'none';
 	d.getElementById('qt_options').style.display = 'none';
@@ -362,12 +380,49 @@ function changedType(t) {
 
 	if (t)
 		d.getElementById(t + '_options').style.display = 'block';
+		
+	// A hack brought to by Rick - 3/19/10
+	var origHref = "javascript:openBrowser('filebrowser','src', 'media','media_media_browser_callback');";
+	var mediaHref = "javascript:openMediaBrowser()";
+	if(t == 'fsmedia'){
+		d.getElementById('filebrowser_link').setAttribute("href",mediaHref);
+	} else {
+		d.getElementById('filebrowser_link').setAttribute("href",origHref);
+	}
+}
+
+/*
+ * openMediaBrowser()
+ * pops the finalsite media picker
+ */
+function openMediaBrowser(){
+	var random = Math.floor(Math.random() * 101);
+	var basePath = window.location.href.replace('editor/tinymce/jscripts/tiny_mce/plugins/media/media.htm','');
+	window.open(basePath+'cf_media2/adminpicker.cfm?embed=true&random='+random,'mediaPicker','width=450,height=450,scrollbar=yes,location=no');
+}
+
+/*
+ * getMediaSettings()
+ * gets the values for the settings from the media picker popup
+ */
+function getMediaSettings(flashVars,mediaLabel){
+	var d = document;
+	var basePath = window.location.href.replace('editor/tinymce/jscripts/tiny_mce/plugins/media/media.htm','');
+	
+	d.getElementById('fsmedia_flashvars').value = flashVars;
+	//d.getElementById('fsmedia_flashvars_display').value = flashVars;
+	
+	d.getElementById('src').value = basePath+'cf_media2/mediaPlayer.swf'; //decodeURI(mediaLabel);
 }
 
 function serializeParameters() {
 	var d = document, f = d.forms[0], s = '';
 
 	switch (f.media_type.options[f.media_type.selectedIndex].value) {
+		case "fsmedia":
+			s += getStr('fsmedia', 'flashvars');
+		break;
+		
 		case "flash":
 			s += getBool('flash', 'play', true);
 			s += getBool('flash', 'loop', true);
@@ -550,6 +605,12 @@ function generatePreview(c) {
 	pl = serializeParameters();
 
 	switch (f.media_type.options[f.media_type.selectedIndex].value) {
+		case "fsmedia":
+			cls = 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000';
+			codebase = 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0';
+			type = 'application/x-shockwave-flash';
+			break;
+			
 		case "flash":
 			cls = 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000';
 			codebase = 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0';

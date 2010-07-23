@@ -29,6 +29,7 @@
 								<td><label for="media_type">{#media_dlg.type}</label></td>
 								<td>
 									<select id="media_type" name="media_type" onchange="changedType(this.value);generatePreview();">
+										<option value="fsmedia">Media Manager</option>
 										<option value="flash">Flash</option>
 										<!-- <option value="flv">Flash video (FLV)</option> -->
 										<option value="qt">Quicktime</option>
@@ -117,7 +118,27 @@
 						</tr>
 					</table>
 				</fieldset>
-
+				
+				<fieldset id="fsmedia_options">
+					<legend>Media Settings</legend>
+					
+					<table>
+						<!--
+						<tr>
+							<td><label for="fsmedia_base">{#media_dlg.base}</label></td>
+							<td><input type="text" id="fsmedia_base" name="fsmedia_base" onchange="generatePreview();" /></td>
+						</tr>
+						-->
+						<tr>
+							<td><label for="fsmedia_flashvars">{#media_dlg.flashvars}</label></td>
+							<td>
+								<input type="text" id="fsmedia_flashvars" name="fsmedia_flashvars" onchange="generatePreview();" disabled="true" style="width: 315px;" />
+								<!-- <input type="text" id="fsmedia_flashvars" name="fsmedia_flashvars" value="" style="display: none;" /> -->
+							</td>
+						</tr>
+					</table>
+				</fieldset>
+				
 				<fieldset id="flash_options">
 					<legend>{#media_dlg.flash_options}</legend>
 

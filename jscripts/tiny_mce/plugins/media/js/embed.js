@@ -2,6 +2,15 @@
  * This script contains embed functions for common plugins. This scripts are complety free to use for any purpose.
  */
 
+function writeFsMedia(p) {
+	writeEmbed(
+		'D27CDB6E-AE6D-11cf-96B8-444553540000',
+		'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0',
+		'application/x-shockwave-flash',
+		p
+	);
+}
+
 function writeFlash(p) {
 	writeEmbed(
 		'D27CDB6E-AE6D-11cf-96B8-444553540000',

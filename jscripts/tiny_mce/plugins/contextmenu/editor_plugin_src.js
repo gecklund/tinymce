@@ -41,7 +41,7 @@
 			t.onContextMenu = new tinymce.util.Dispatcher(this);
 
 			ed.onContextMenu.add(function(ed, e) {
-				if (!e.ctrlKey) {
+				if (!e.ctrlKey || tinymce.isMac) {
 					// Restore the last selection since it was removed
 					if (lastRng)
 						ed.selection.setRng(lastRng);
