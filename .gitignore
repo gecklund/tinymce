@@ -10,6 +10,7 @@ docs
 *.bak
 *.log
 *.svn
+Thumbs.db
 .DS_Store
 editor_plugin.js
 editor_template.js
