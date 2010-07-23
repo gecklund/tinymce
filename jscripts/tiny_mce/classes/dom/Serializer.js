@@ -541,6 +541,9 @@
 				if (s.entity_encoding !== 'raw')
 					h = t._encode(h);
 
+				//FSfix:[BUG-1106]
+				h = h.replace(/(=[\w:/]*)(&amp;)/gi, '$1&');//replaces &amp; with & anywhere it looks like a query string
+				
 				// Use BR instead of &nbsp; padded P elements inside editor and use <p>&nbsp;</p> outside editor
 /*				if (o.set)
 					h = h.replace(/<p>\s+(&nbsp;|&#160;|\u00a0|<br \/>)\s+<\/p>/g, '<p><br /></p>');
