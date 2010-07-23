@@ -331,8 +331,13 @@
 				if (dom.getAttrib(n, 'class') == 'mceItemEmbed') {
 					switch (dom.getAttrib(n, 'type')) {
 						case 'application/x-shockwave-flash':
-							dom.replace(t._createImg('mceItemFlash', n), n);
-							dom.replace(t._createImg('mceItemFsMedia', n), n);
+							if(dom.getAttrib(n, 'data').indexOf("mediaPlayer.swf") != -1){
+								dom.replace(t._createImg('mceItemFsMedia', n), n);
+							} else {
+								dom.replace(t._createImg('mceItemFlash', n), n);
+							}
+							//dom.replace(t._createImg('mceItemFlash', n), n);
+							//dom.replace(t._createImg('mceItemFsMedia', n), n);
 							break;
 
 						case 'application/x-director':
