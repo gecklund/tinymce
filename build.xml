@@ -168,6 +168,8 @@
 		<yuicompress infile="${build_dir}/plugins/autoresize/editor_plugin_src.js" outfile="${build_dir}/plugins/autoresize/editor_plugin.js" />
 		<yuicompress infile="${build_dir}/plugins/wordcount/editor_plugin_src.js" outfile="${build_dir}/plugins/wordcount/editor_plugin.js" />
 		<yuicompress infile="${build_dir}/plugins/legacyoutput/editor_plugin_src.js" outfile="${build_dir}/plugins/legacyoutput/editor_plugin.js" />
+		<yuicompress infile="${build_dir}/plugins/saveit/editor_plugin_src.js" outfile="${build_dir}/plugins/saveit/editor_plugin.js" />
+		<yuicompress infile="${build_dir}/plugins/popupeditor/editor_plugin_src.js" outfile="${build_dir}/plugins/popupeditor/editor_plugin.js" />
 
 		<!-- Compress jQuery plugin -->
 		<yuicompress infile="${classes_dir}/adapter/jquery/jquery.tinymce.js" outfile="${build_dir}/jquery.tinymce.js" />
@@ -214,6 +216,8 @@
 			<fileset dir="${build_dir}" includes="plugins/tabfocus/editor_plugin.js" />
 			<fileset dir="${build_dir}" includes="plugins/autoresize/editor_plugin.js" />
 			<fileset dir="${build_dir}" includes="plugins/wordcount/editor_plugin.js" />
+			<fileset dir="${build_dir}" includes="plugins/saveit/editor_plugin.js" />
+			<fileset dir="${build_dir}" includes="plugins/popupeditor/editor_plugin.js" />
 			<fileset dir="${build_dir}" includes="themes/advanced/langs/en.js" />
 			<fileset dir="${build_dir}" includes="themes/advanced/editor_template.js" />
 		</concat>

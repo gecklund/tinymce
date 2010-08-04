@@ -9,8 +9,8 @@
  */
 
 (function() {
-	var JSONRequest = tinymce.util.JSONRequest, each = tinymce.each, DOM = tinymce.DOM;
-
+	var JSONRequest = tinymce.util.JSONRequest, XHR = tinymce.util.XHR, each = tinymce.each, DOM = tinymce.DOM;
+	
 	tinymce.create('tinymce.plugins.SpellcheckerPlugin', {
 		getInfo : function() {
 			return {
@@ -23,7 +23,7 @@
 		},
 
 		init : function(ed, url) {
-			var t = this, cm;
+			var t = this, cm, fh, ignoreStr;
 
 			t.url = url;
 			t.editor = ed;
@@ -56,6 +56,7 @@
 					t._sendRPC('checkWords', [t.selectedLang, t._getWords()], function(r) {
 						if (r.length > 0) {
 							t.active = 1;
+							r = t._removeIgnored(r);//remove ignored words and words from the local dic
 							t._markWords(r);
 							ed.setProgressState(0);
 							ed.nodeChanged();
@@ -97,6 +98,14 @@
 			ed.onBeforeExecCommand.add(function(ed, cmd) {
 				if (cmd == 'mceFullScreen')
 					t._done();
+			});
+			
+			//Get words to ignore
+			XHR.send({
+				url : tinymce._addVer(url+'/localdic/local.txt'),
+				success : function(content) {
+					t.ignoreStr = content;
+				}
 			});
 
 			// Find selected language
@@ -164,7 +173,7 @@
 			} else
 				tinymce.walk(n, f, 'childNodes');
 		},
-
+		
 		_getSeparators : function() {
 			var re = '', i, str = this.editor.getParam('spellchecker_word_separator_chars', '\\s!"#$%&()*+,-./:;<=>?@[\]^_{|}§©«®±¶·¸»¼½¾¿×÷¤\u201d\u201c');
 
@@ -208,7 +217,7 @@
 
 		_removeWords : function(w) {
 			var ed = this.editor, dom = ed.dom, se = ed.selection, b = se.getBookmark();
-
+			
 			each(dom.select('span').reverse(), function(n) {
 				if (n && (dom.hasClass(n, 'mceItemHiddenSpellWord') || dom.hasClass(n, 'mceItemHidden'))) {
 					if (!w || dom.decode(n.innerHTML) == w)
@@ -216,7 +225,22 @@
 				}
 			});
 
+			//add to ignore list
+			this.ignoreStr = this.ignoreStr + "|" + w;
+			
 			se.moveToBookmark(b);
+		},
+		
+		_removeIgnored : function(wl) {
+			var w, regex, rl = [];
+			
+			for(w in wl){
+				regex = new RegExp("/\|"+wl[w], "gi")
+				if(this.ignoreStr.match(regex) == null){//if not in the ignore list add it to the returning list
+					rl.push(wl[w]);
+				}
+			}
+			return rl;
 		},
 
 		_markWords : function(wl) {
@@ -344,7 +368,7 @@
 							onclick : function() {
 								var word = wordSpan.innerHTML;
 
-								dom.remove(wordSpan, 1);
+								t._removeWords(dom.decode(word));
 								t._checkDone();
 
 								ed.setProgressState(1);
