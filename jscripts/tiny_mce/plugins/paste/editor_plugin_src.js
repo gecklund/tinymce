@@ -502,6 +502,9 @@
 						return cls.length ? ' class="' + cls.join(" ") + '"' : '';
 				};
 
+				//FSfix: [BUG-4666]  check for MsoNoSpacing and if there are no inline styles set padding and margins to 0
+				h = h.replace(/(class="MsoNoSpacing")(?![^>]*style=")/gi, '$1 style="margin:0; padding:0;"');
+				
 				h = h.replace(/ class="([^"]+)"/gi, removeClasses);
 				h = h.replace(/ class=(\w+)/gi, removeClasses);
 			}
