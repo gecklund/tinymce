@@ -241,6 +241,13 @@
 			if (p.src)
 				p.src = ed.convertURL(p.src, 'src', n);
 
+			//force an ID to avoid some IE issues
+			if(typeof p.id == 'undefined')
+				p.id = (new Date()).getTime();
+			
+			//add allowscript access param
+			p.allowScriptAccess = "always";
+			
 			if (stc) {
 				ob = dom.create('span', {
 					id : p.id,
