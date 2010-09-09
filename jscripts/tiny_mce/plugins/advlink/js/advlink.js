@@ -281,7 +281,7 @@ function buildOnClick() {
 	var url = formObj.popupurl.value;
 
 	onclick += url + "','";
-	onclick += formObj.popupname.value + "','";
+	onclick += formObj.popupname.value.replace(/\s/gi, "") + "','";
 
 	if (formObj.popuplocation.checked)
 		onclick += "location=yes,";
