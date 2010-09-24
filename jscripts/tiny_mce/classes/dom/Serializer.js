@@ -646,8 +646,9 @@
 							}
 
 							// IE sometimes adds a / infront of the node name
-							if (nn.charAt(0) == '/')
-								nn = nn.substring(1);
+							if (nn.charAt(0) == '/'){
+								return;//this is an end tag? we shouldn't be here //nn = nn.substring(1);
+							}
 						} else if (isGecko) {
 							// Ignore br elements
 							if (n.nodeName === 'BR' && n.getAttribute('type') == '_moz')
