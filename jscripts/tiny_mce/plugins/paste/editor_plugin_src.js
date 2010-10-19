@@ -778,12 +778,12 @@
 				// If HTML content with line-breaking tags, then remove all cr/lf chars because only tags will break a line
 				if (/<(?:p|br|h[1-6]|ul|ol|dl|table|t[rdh]|div|blockquote|fieldset|pre|address|center)[^>]*>/i.test(h)) {
 					process([
-						/[\n\r]+/g
+						[/[\n\r]+/g, " "]
 					]);
 				} else {
 					// Otherwise just get rid of carriage returns (only need linefeeds)
 					process([
-						/\r+/g
+						[/\r+/g, " "]
 					]);
 				}
 
@@ -826,7 +826,7 @@
 				else if (is(rl, "string")) {
 					process(new RegExp(rl, "gi"));
 				}
-
+				
 				// Treat paragraphs as specified in the config
 				if (linebr == "none") {
 					process([
