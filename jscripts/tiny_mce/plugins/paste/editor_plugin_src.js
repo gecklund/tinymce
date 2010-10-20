@@ -14,7 +14,7 @@
 		defs = {
 			paste_auto_cleanup_on_paste : true,
 			paste_block_drop : false,
-			paste_retain_style_properties : "margin,padding",
+			paste_retain_style_properties : "none",
 			paste_strip_class_attributes : "mso",
 			paste_remove_spans : false,
 			paste_remove_styles : false,
@@ -137,7 +137,7 @@
 				// Check if browser supports direct plaintext access
 				if (ed.pasteAsPlainText && (e.clipboardData || dom.doc.dataTransfer)) {
 					e.preventDefault();
-					process({content : (e.clipboardData || dom.doc.dataTransfer).getData('Text')}, true);
+					process({content : (e.clipboardData || dom.doc.dataTransfer).getData('Text').replace(/\r?\n/g, '<br />')});
 					return;
 				}
 
