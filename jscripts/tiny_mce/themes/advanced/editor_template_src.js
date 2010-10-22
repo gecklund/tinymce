@@ -589,7 +589,7 @@
 				DOM.setStyle(ifr, 'width', w);
 
 				// Make sure that the size is never smaller than the over all ui
-				if (w < e.clientWidth)
+				if (w < e.clientWidth){
 					w = e.clientWidth;
 					DOM.setStyle(ifr, 'width', e.clientWidth);
 				}

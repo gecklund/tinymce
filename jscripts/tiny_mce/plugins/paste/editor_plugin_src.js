@@ -14,7 +14,7 @@
 		defs = {
 			paste_auto_cleanup_on_paste : true,
 			paste_block_drop : false,
-			paste_retain_style_properties : "none",
+			paste_retain_style_properties : "margin,padding",
 			paste_strip_class_attributes : "mso",
 			paste_remove_spans : false,
 			paste_remove_styles : false,
@@ -512,7 +512,10 @@
 			// Remove spans option
 			if (getParam(ed, "paste_remove_spans")) {
 				h = h.replace(/<\/?span[^>]*>/gi, "");
-			}
+			}			
+			
+			//remove css at the top if word decided to include that
+			h = h.replace(/^[^{]+\s\{[^<]*\}/g, "");	
 
 			//console.log('After preprocess:' + h);
 
