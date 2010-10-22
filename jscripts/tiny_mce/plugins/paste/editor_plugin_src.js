@@ -15,6 +15,7 @@
 			paste_auto_cleanup_on_paste : true,
 			paste_block_drop : false,
 			paste_retain_style_properties : "margin,padding",
+			
 			paste_strip_class_attributes : "mso",
 			paste_remove_spans : false,
 			paste_remove_styles : false,

@@ -24,10 +24,10 @@ function init() {
 
 	var formObj = document.forms[0];
 	var inst = tinyMCEPopup.editor;
-	var elm = inst.selection.getNode();
+	var elm = inst.currentLinkNode || inst.selection.getNode();
 	var action = "insert";
 	var html;
-
+	
 	document.getElementById('hrefbrowsercontainer').innerHTML = getBrowserHTML('hrefbrowser','href','file','advlink');
 	document.getElementById('popupurlbrowsercontainer').innerHTML = getBrowserHTML('popupurlbrowser','popupurl','file','advlink');
 	document.getElementById('linklisthrefcontainer').innerHTML = getLinkListHTML('linklisthref','href');

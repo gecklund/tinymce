@@ -40,6 +40,7 @@
 			ed.addShortcut('ctrl+k', 'advlink.advlink_desc', 'mceAdvLink');
 
 			ed.onNodeChange.add(function(ed, cm, n, co) {
+				ed.currentLinkNode = n;
 				cm.setDisabled('link', co && n.nodeName != 'A');
 				cm.setActive('link', n.nodeName == 'A' && !n.name);
 			});
