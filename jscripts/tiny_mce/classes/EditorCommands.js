@@ -178,6 +178,14 @@
 			// Override justify commands to use the text formatter engine
 			'JustifyLeft,JustifyCenter,JustifyRight,JustifyFull' : function(command) {
 				var align = command.substring(7);
+				
+				//FSfix: [BUG-6962]
+				//force root block when we're trying to indent something with no root block
+				if(!settings.forced_root_block){
+					settings.forced_root_block = 'p';
+					editor.forceBlocks.forceRoots(editor);//we're not supposed to do this..
+					settings.forced_root_block = '';
+				}
 
 				// Remove all other alignments first
 				each('left,center,right,full'.split(','), function(name) {
@@ -303,6 +311,14 @@
 				intentValue = settings.indentation;
 				indentUnit = /[a-z%]+$/i.exec(intentValue);
 				intentValue = parseInt(intentValue);
+
+				//FSfix: [BUG-6962]
+				//force root block when we're trying to indent something with no root block
+				if(!settings.forced_root_block){
+					settings.forced_root_block = 'p';
+					editor.forceBlocks.forceRoots(editor);//we're not supposed to do this..
+					settings.forced_root_block = '';
+				}
 
 				if (!queryCommandState('InsertUnorderedList') && !queryCommandState('InsertOrderedList')) {
 					each(selection.getSelectedBlocks(), function(element) {
