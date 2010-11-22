@@ -475,7 +475,7 @@
 			so = dir ? s.anchorOffset : s.focusOffset;
 			en = dir ? s.focusNode : s.anchorNode;
 			eo = dir ? s.focusOffset : s.anchorOffset;
-
+			
 			// If selection is in empty table cell
 			if (sn === en && /^(TD|TH)$/.test(sn.nodeName)) {
 				if (sn.firstChild.nodeName == 'BR')
@@ -502,13 +502,19 @@
 			}
 
 			// If the caret is in an invalid location in FF we need to move it into the first block
-			if (sn == b && en == b && b.firstChild && ed.dom.isBlock(b.firstChild)) {
-				sn = en = sn.firstChild;
-				so = eo = 0;
-				rb = d.createRange();
-				rb.setStart(sn, 0);
-				ra = d.createRange();
-				ra.setStart(en, 0);
+			if (sn == b && en == b && b.firstChild){ 
+				if(ed.dom.isBlock(b.firstChild)) {
+					sn = en = sn.firstChild;
+					so = eo = 0;
+					rb = d.createRange();
+					rb.setStart(sn, 0);
+					ra = d.createRange();
+					ra.setStart(en, 0);
+				//need a root block in order to traverse properly
+				}else{
+					n = ed.dom.create('p', null, b.innerHTML);
+					b.innerHTML = n.outerHTML;
+				}
 			}
 
 			// Never use body as start or end node

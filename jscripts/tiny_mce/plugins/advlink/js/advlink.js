@@ -23,8 +23,9 @@ function init() {
 	tinyMCEPopup.resizeToInnerSize();
 
 	var formObj = document.forms[0];
-	var inst = tinyMCEPopup.editor;
-	var elm = inst.currentLinkNode || inst.selection.getNode();
+	var inst = tinyMCEPopup.editor;	
+	var elm = inst.selection.getNode();
+	var sel = inst.selection.getSel();
 	var action = "insert";
 	var html;
 	
@@ -47,10 +48,15 @@ function init() {
 
 	if (isVisible('popupurlbrowser'))
 		document.getElementById('popupurl').style.width = '180px';
-
+	
 	elm = inst.dom.getParent(elm, "A");
+
+	//try the focus node..
+	if(elm === null){
+		elm = inst.dom.getParent(sel.focusNode, "A");
+	}
 	if (elm != null && elm.nodeName == "A")
-		action = "update";
+		action = "update";	
 
 	formObj.insert.value = tinyMCEPopup.getLang(action, 'Insert', true); 
 
