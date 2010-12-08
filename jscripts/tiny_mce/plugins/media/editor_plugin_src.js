@@ -245,6 +245,9 @@
 			if(typeof p.id == 'undefined')
 				p.id = (new Date()).getTime();
 			
+			if(typeof p.align == 'undefined')
+				p.align = "";
+			
 			//add allowscript access param
 			p.allowScriptAccess = "always";
 			
@@ -256,7 +259,8 @@
 					data : p.src,
 					style : dom.getAttrib(n, 'style'),
 					width : o.width,
-					height : o.height
+					height : o.height,
+					align : p.align
 				});
 			} else {
 				ob = dom.create('span', {
@@ -266,7 +270,8 @@
 					style : dom.getAttrib(n, 'style'),
 					codebase : o.codebase,
 					width : o.width,
-					height : o.height
+					height : o.height,
+					align : p.align
 				});
 			}
 
@@ -380,6 +385,7 @@
 				src : this.url + '/img/trans.gif',
 				width : dom.getAttrib(n, 'width') || 100,
 				height : dom.getAttrib(n, 'height') || 100,
+				align : dom.getAttrib(n, 'align') || '',
 				style : dom.getAttrib(n, 'style'),
 				'class' : cl
 			});
