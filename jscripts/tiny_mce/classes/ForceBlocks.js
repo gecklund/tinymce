@@ -512,8 +512,7 @@
 					ra.setStart(en, 0);
 				//need a root block in order to traverse properly
 				}else{
-					n = ed.dom.create('p', null, b.innerHTML);
-					b.innerHTML = n.outerHTML;
+					b.innerHTML = '<p>'+b.innerHTML+'</p>';					
 				}
 			}
 
