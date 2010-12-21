@@ -883,7 +883,7 @@
 
 				aligncenter : [
 					{selector : 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li', styles : {textAlign : 'center'}},
-					{selector : 'img', styles : {display : 'block', marginLeft : 'auto', marginRight : 'auto'}},
+					//{selector : 'img', styles : {display : 'block', marginLeft : 'auto', marginRight : 'auto'}},
 					{selector : 'table', styles : {marginLeft : 'auto', marginRight : 'auto'}}
 				],
 

@@ -170,6 +170,9 @@
 		<yuicompress infile="${build_dir}/plugins/legacyoutput/editor_plugin_src.js" outfile="${build_dir}/plugins/legacyoutput/editor_plugin.js" />
 		<yuicompress infile="${build_dir}/plugins/saveit/editor_plugin_src.js" outfile="${build_dir}/plugins/saveit/editor_plugin.js" />
 		<yuicompress infile="${build_dir}/plugins/popupeditor/editor_plugin_src.js" outfile="${build_dir}/plugins/popupeditor/editor_plugin.js" />
+		<yuicompress infile="${build_dir}/plugins/linkfile/editor_plugin_src.js" outfile="${build_dir}/plugins/linkfile/editor_plugin.js" />
+		<yuicompress infile="${build_dir}/plugins/linkmedia/editor_plugin_src.js" outfile="${build_dir}/plugins/linkmedia/editor_plugin.js" />
+		<yuicompress infile="${build_dir}/plugins/linkpage/editor_plugin_src.js" outfile="${build_dir}/plugins/linkpage/editor_plugin.js" />
 
 		<!-- Compress jQuery plugin -->
 		<yuicompress infile="${classes_dir}/adapter/jquery/jquery.tinymce.js" outfile="${build_dir}/jquery.tinymce.js" />
