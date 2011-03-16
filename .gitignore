@@ -4,14 +4,17 @@ tmp
 docs
 .settings
 .project
+.externalToolBuilders
 *~
 *.diff
 *.patch
 *.bak
 *.log
 *.svn
+*.swp
 Thumbs.db
 .DS_Store
+.project
 editor_plugin.js
 editor_template.js
 jscripts/tiny_mce/jquery.tinymce.js
@@ -22,6 +25,7 @@ jscripts/tiny_mce/tiny_mce_prototype.js
 jscripts/tiny_mce/tiny_mce_prototype_src.js
 jscripts/tiny_mce/tiny_mce_src.js
 
+build-utils
 changelog
 jscripts/tiny_mce/classes/commands/
 jscripts/tiny_mce/plugins/compat2x/

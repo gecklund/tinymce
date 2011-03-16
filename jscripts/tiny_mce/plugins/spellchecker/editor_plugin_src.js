@@ -71,10 +71,8 @@
 					t._done();
 			});
 
-			ed.onInit.add(function() {
-				if (ed.settings.content_css !== false)
-					ed.dom.loadCSS(url + '/css/content.css');
-			});
+			if (ed.settings.content_css !== false)
+				ed.contentCSS.push(url + '/css/content.css');
 
 			ed.onClick.add(t._showMenu, t);
 			ed.onContextMenu.add(t._showMenu, t);
@@ -175,7 +173,7 @@
 		},
 		
 		_getSeparators : function() {
-			var re = '', i, str = this.editor.getParam('spellchecker_word_separator_chars', '\\s!"#$%&()*+,-./:;<=>?@[\]^_{|}§©«®±¶·¸»¼½¾¿×÷¤\u201d\u201c');
+			var re = '', i, str = this.editor.getParam('spellchecker_word_separator_chars', '\\s!"#$%&()*+,-./:;<=>?@[\]^_{|}ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\u201d\u201c');
 
 			// Build word separator regexp
 			for (i=0; i<str.length; i++)

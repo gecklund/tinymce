@@ -19,7 +19,7 @@
 	 *  tinymce.activeEditor.formatter.register('mycustomformat', {
 	 *    inline : 'span',
 	 *    styles : {color : '#ff0000'}
-     *  });
+	 *  });
 	 *
 	 *  tinymce.activeEditor.formatter.apply('mycustomformat');
 	 */
@@ -37,7 +37,7 @@
 			selection = ed.selection,
 			TreeWalker = tinymce.dom.TreeWalker,
 			rangeUtils = new tinymce.dom.RangeUtils(dom),
-			isValid = ed.schema.isValid,
+			isValid = ed.schema.isValidChild,
 			isBlock = dom.isBlock,
 			forcedRootBlock = ed.settings.forced_root_block,
 			nodeIndex = dom.nodeIndex,
@@ -129,7 +129,7 @@
 		 * @param {Node} node Optional node to apply the format to defaults to current selection.
 		 */
 		function apply(name, vars, node) {
-			var formatList = get(name), format = formatList[0], bookmark, rng, i;
+			var formatList = get(name), format = formatList[0], bookmark, rng, i, isCollapsed = selection.isCollapsed();
 
 			/**
 			 * Moves the start to the first suitable text node.
@@ -226,6 +226,11 @@
 						if (format.selector) {
 							// Look for matching formats
 							each(formatList, function(format) {
+								// Check collapsed state if it exists
+								if ('collapsed' in format && format.collapsed !== isCollapsed) {
+									return;
+								}
+
 								if (dom.is(node, format.selector) && !isCaretNode(node)) {
 									setElementFormat(node, format);
 									found = true;
@@ -240,7 +245,8 @@
 						}
 
 						// Is it valid to wrap this item
-						if ((format.wrap_links !== false || nodeName != 'a') && isValid(wrapName, nodeName) && isValid(parentName, wrapName)) {
+						if (isValid(wrapName, nodeName) && isValid(parentName, wrapName) &&
+								!(node.nodeType === 3 && node.nodeValue.length === 1 && node.nodeValue.charCodeAt(0) === 65279)) {
 							// Start wrapping
 							if (!currentWrapElm) {
 								// Wrap the node
@@ -264,6 +270,30 @@
 					// Process siblings from range
 					each(nodes, process);
 				});
+
+				// Wrap links inside as well, for example color inside a link when the wrapper is around the link
+				if (format.wrap_links === false) {
+					each(newWrappers, function(node) {
+						function process(node) {
+							var i, currentWrapElm, children;
+
+							if (node.nodeName === 'A') {
+								currentWrapElm = wrapElm.cloneNode(FALSE);
+								newWrappers.push(currentWrapElm);
+
+								children = tinymce.grep(node.childNodes);
+								for (i = 0; i < children.length; i++)
+									currentWrapElm.appendChild(children[i]);
+
+								node.appendChild(currentWrapElm);
+							}
+
+							each(tinymce.grep(node.childNodes), process);
+						};
+
+						process(node);
+					});
+				}
 
 				// Cleanup
 				each(newWrappers, function(node) {
@@ -304,8 +334,9 @@
 
 					childCount = getChildCount(node);
 
-					// Remove empty nodes
-					if (childCount === 0) {
+					// Remove empty nodes but only if there is multiple wrappers and they are not block
+					// elements so never remove single <h1></h1> since that would remove the currrent empty block element where the caret is at
+					if ((newWrappers.length > 1 || !isBlock(node)) && childCount === 0) {
 						dom.remove(node, 1);
 						return;
 					}
@@ -321,6 +352,19 @@
 							// this: <span style="color:red"><b><span style="color:red; font-size:10px">text</span></b></span>
 							// will become: <span style="color:red"><b><span style="font-size:10px">text</span></b></span>
 							each(dom.select(format.inline, node), function(child) {
+								var parent;
+
+								// When wrap_links is set to false we don't want
+								// to remove the format on children within links
+								if (format.wrap_links === false) {
+									parent = child.parentNode;
+
+									do {
+										if (parent.nodeName === 'A')
+											return;
+									} while (parent = parent.parentNode);
+								}
+
 								removeFormat(format, vars, child, format.exact ? child : null);
 							});
 						});
@@ -361,7 +405,7 @@
 
 					applyRngStyle(expandRng(rng, formatList));
 				} else {
-					if (!selection.isCollapsed() || !format.inline) {
+					if (!isCollapsed || !format.inline || dom.select('td.mceSelected,th.mceSelected').length) {
 						// Apply formatting to selection
 						bookmark = selection.getBookmark();
 						applyRngStyle(expandRng(selection.getRng(TRUE), formatList));
@@ -540,8 +584,8 @@
 
 					if (startContainer != endContainer) {
 						// Wrap start/end nodes in span element since these might be cloned/moved
-						startContainer = wrap(startContainer, 'span', {id : '_start', _mce_type : 'bookmark'});
-						endContainer = wrap(endContainer, 'span', {id : '_end', _mce_type : 'bookmark'});
+						startContainer = wrap(startContainer, 'span', {id : '_start', 'data-mce-type' : 'bookmark'});
+						endContainer = wrap(endContainer, 'span', {id : '_end', 'data-mce-type' : 'bookmark'});
 
 						// Split start/end
 						splitToFormatRoot(startContainer);
@@ -577,7 +621,7 @@
 				return;
 			}
 
-			if (!selection.isCollapsed() || !format.inline) {
+			if (!selection.isCollapsed() || !format.inline || dom.select('td.mceSelected,th.mceSelected').length) {
 				bookmark = selection.getBookmark();
 				removeRngStyle(selection.getRng(TRUE));
 				selection.moveToBookmark(bookmark);
@@ -1016,7 +1060,7 @@
 			// Expand start/end container to matching selector
 			if (format[0].selector && format[0].expand !== FALSE && !format[0].inline) {
 				function findSelectorEndPoint(container, sibling_name) {
-					var parents, i, y;
+					var parents, i, y, curFormat;
 
 					if (container.nodeType == 3 && container.nodeValue.length == 0 && container[sibling_name])
 						container = container[sibling_name];
@@ -1024,7 +1068,13 @@
 					parents = getParents(container);
 					for (i = 0; i < parents.length; i++) {
 						for (y = 0; y < format.length; y++) {
-							if (dom.is(parents[i], format[y].selector))
+							curFormat = format[y];
+
+							// If collapsed state is set then skip formats that doesn't match that
+							if ("collapsed" in curFormat && curFormat.collapsed !== rng.collapsed)
+								continue;
+
+							if (dom.is(parents[i], curFormat.selector))
 								return parents[i];
 						}
 					}
@@ -1145,7 +1195,7 @@
 				// Remove style attribute if it's empty
 				if (stylesModified && dom.getAttrib(node, 'style') == '') {
 					node.removeAttribute('style');
-					node.removeAttribute('_mce_style');
+					node.removeAttribute('data-mce-style');
 				}
 
 				// Remove attributes
@@ -1186,7 +1236,7 @@
 
 						// Remove mce prefixed attributes
 						if (MCE_ATTR_RE.test(name))
-							node.removeAttribute('_mce_' + name);
+							node.removeAttribute('data-mce-' + name);
 
 						node.removeAttribute(name);
 					}
@@ -1304,7 +1354,7 @@
 		 * @return {Boolean} true/false if the node is a bookmark node.
 		 */
 		function isBookmarkNode(node) {
-			return node && node.nodeType == 1 && node.getAttribute('_mce_type') == 'bookmark';
+			return node && node.nodeType == 1 && node.getAttribute('data-mce-type') == 'bookmark';
 		};
 
 		/**
@@ -1407,7 +1457,7 @@
 			if (prev && next) {
 				function findElementSibling(node, sibling_name) {
 					for (sibling = node; sibling; sibling = sibling[sibling_name]) {
-						if (sibling.nodeType == 3 && !isWhiteSpaceNode(sibling))
+						if (sibling.nodeType == 3 && sibling.nodeValue.length !== 0)
 							return node;
 
 						if (sibling.nodeType == 1 && !isBookmarkNode(sibling))
