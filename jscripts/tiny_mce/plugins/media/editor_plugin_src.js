@@ -15,6 +15,7 @@
 	// Media types supported by this plugin
 	mediaTypes = [
 		// Type, clsid:s, mime types, codebase
+		["FSMedia", "d27cdb6e-ae6d-11cf-96b8-444553540000", "application/x-shockwave-flash", "http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"],
 		["Flash", "d27cdb6e-ae6d-11cf-96b8-444553540000", "application/x-shockwave-flash", "http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"],
 		["ShockWave", "166b1bca-3f9c-11cf-8075-444553540000", "application/x-director", "http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab#version=8,5,1,0"],
 		["WindowsMedia", "6bf52a52-394a-11d3-b153-00c04f79faa6,22d6f312-b0f6-11d0-94ab-0080c74c7e95,05589fa1-c356-11ce-bf01-00aa0055595a", "application/x-mplayer2", "http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=5,1,52,701"],
@@ -82,6 +83,7 @@
 
 			// Handle the media_types setting
 			tinymce.each(ed.getParam("media_types",
+				"fsmedia=swf;" +
 				"video=mp4,m4v,ogv,webm;" +
 				"silverlight=xap;" +
 				"flash=swf,flv;" +
@@ -281,6 +283,11 @@
 			if (img) {
 				data = JSON.parse(img.attr('data-mce-json'));
 				data.type = this.getType(img.attr('class')).name.toLowerCase();
+				
+				//if there's a reference to FS mediaplayer.swf; this type is actually fsmedia
+				if(typeof(data.params.src) === 'string' && data.params.src === 'cf_media2/mediaPlayer.swf'){
+					data.type = 'fsmedia';
+				}
 
 				// Add some extra properties to the data object
 				tinymce.each(rootAttributes, function(name) {

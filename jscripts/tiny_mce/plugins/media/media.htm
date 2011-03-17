@@ -30,6 +30,7 @@
 								<td><label for="media_type">{#media_dlg.type}</label></td>
 								<td>
 									<select id="media_type" name="media_type" onchange="Media.formToData('type');">
+										<option value="fsmedia">Media Manager</option>
 										<option value="video">HTML5 Video</option>
 										<option value="flash">Flash</option>
 										<option value="quicktime">QuickTime</option>
@@ -45,7 +46,7 @@
 								<td>
 									<table role="presentation" border="0" cellspacing="0" cellpadding="0">
 									<tr>
-										<td><input id="src" name="src" type="text" value="" class="mceFocus" onchange="switchType(this.value);Media.formToData();" /></td>
+										<td><span id="altSrc"></span><input id="src" name="src" type="text" value="" class="mceFocus" onchange="switchType(this.value);Media.formToData();" /></td>
 										<td id="filebrowsercontainer">&nbsp;</td>
 									</tr>
 									</table>
@@ -116,6 +117,19 @@
 							<td><input type="text" id="vspace" name="vspace" class="number" onchange="Media.formToData();" /></td>
 							<td><label for="hspace">{#media_dlg.hspace}</label></td>
 							<td><input type="text" id="hspace" name="hspace" class="number" onchange="Media.formToData();" /></td>
+						</tr>
+					</table>
+				</fieldset>
+
+				<fieldset id="fsmedia_options">
+					<legend>Media Settings</legend>
+					
+					<table>
+						<tr>
+							<td><label for="fsmedia_flashvars">{#media_dlg.flashvars}</label></td>
+							<td>
+								<input type="text" id="fsmedia_flashvars" name="fsmedia_flashvars" onchange="Media.formToData();" disabled="true" style="width: 315px;" />
+							</td>
 						</tr>
 					</table>
 				</fieldset>

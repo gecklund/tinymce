@@ -190,6 +190,7 @@
 			}
 
 			// Hide all fieldsets and show the one active
+			get('fsmedia_options').style.display = 'none';
 			get('video_options').style.display = 'none';
 			get('flash_options').style.display = 'none';
 			get('quicktime_options').style.display = 'none';
@@ -202,6 +203,7 @@
 
 			setVal('media_type', data.type);
 
+			setOptions('fsmedia', 'flashvars');
 			setOptions('flash', 'play,loop,menu,swliveconnect,quality,scale,salign,wmode,base,flashvars');
 			setOptions('quicktime', 'loop,autoplay,cache,controller,correction,enablejavascript,kioskmode,autohref,playeveryframe,targetcache,scale,starttime,endtime,target,qtsrcchokespeed,volume,qtsrc');
 			setOptions('shockwave', 'sound,progress,autostart,swliveconnect,swvolume,swstretchstyle,swstretchhalign,swstretchvalign');
@@ -209,6 +211,15 @@
 			setOptions('realmedia', 'autostart,loop,autogotourl,center,imagestatus,maintainaspect,nojava,prefetch,shuffle,console,controls,numloop,scriptcallbacks');
 			setOptions('video', 'poster,autoplay,loop,preload,controls');
 			setOptions('global', 'id,name,vspace,hspace,bgcolor,align,width,height');
+
+			///////////////////////////////
+			//fsmedia hack for file browser
+			if(data.type === 'fsmedia'){
+				get('filebrowser_link').href = 'javascript:openMediaBrowser()';
+				data.params.allowScriptAccess = 'always';				
+			}else{
+				get('filebrowser_link').href = "javascript:openBrowser('filebrowser','src', 'media','media_media_browser_callback');";
+			}
 
 			if (to_form) {
 				if (data.type == 'video') {
@@ -332,6 +343,30 @@
 			return "";
 		}
 	};
+	
+	
+	/*
+	 * openMediaBrowser()
+	 * pops the finalsite media picker
+	 */
+	window.openMediaBrowser = function(){
+		var random = Math.floor(Math.random() * 101),
+			basePath = window.location.href.replace('editor/tinymce/jscripts/tiny_mce/plugins/media/media.htm','');
+		window.open(basePath+'cf_media2/adminpicker.cfm?embed=true&random='+random,'mediaPicker','width=450,height=450,scrollbar=yes,location=no');
+	}
+	
+	/*
+	 * getMediaSettings()
+	 * gets the values for the settings from the media picker popup
+	 */
+	window.getMediaSettings = function(flashVars,mediaLabel){
+		var basePath = window.location.href.replace('editor/tinymce/jscripts/tiny_mce/plugins/media/media.htm','');
+		
+		get('fsmedia_flashvars').value = flashVars;	
+		get('flash_flashvars').value = flashVars;	
+		get('id').value = (new Date()).getTime();//solves some issues in ie
+		get('src').value = basePath+'cf_media2/mediaPlayer.swf'; //decodeURI(mediaLabel);
+	}
 
 	tinyMCEPopup.requireLangPack();
 	tinyMCEPopup.onInit.add(function() {
