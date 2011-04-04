@@ -87,7 +87,7 @@
 		moveStates : function(to_form, field) {
 			var data = this.data, editor = this.editor, data = this.data,
 				mediaPlugin = editor.plugins.media, ext, src, typeInfo, defaultStates, src;
-
+				
 			defaultStates = {
 				// QuickTime
 				quicktime_autoplay : true,
@@ -144,8 +144,10 @@
 						if (list) {
 							if (to_form) {
 								setVal(formItemName, list[name]);
-							} else {
-								delete list[name];
+							} else { 
+								if (typeof(list[name]) != 'undefined') {
+									delete list[name];
+								}
 
 								value = getVal(formItemName);
 								if (type == 'video' && value === true)

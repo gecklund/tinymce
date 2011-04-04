@@ -111,7 +111,7 @@
 
 			ed.onPreInit.add(function() {
 				// Allow video elements
-				ed.schema.addValidElements('object[id|style|width|height|classid|codebase|*],param[name|value],embed[id|style|width|height|type|src|*],video[*],audio[*],source[*]');
+				ed.schema.addValidElements('object[id|style|width|height|align|classid|codebase|*],param[name|value],embed[id|style|width|height|type|src|*],video[*],audio[*],source[*]');
 
 				// Convert video elements to image placeholder
 				ed.parser.addNodeFilter('object,embed,video,audio,script,iframe', function(nodes) {
@@ -254,6 +254,7 @@
 
 			img.width = data.width || "320";
 			img.height = data.height || "240";
+			img.align = data.align || "";
 
 			return img;
 		},
@@ -477,6 +478,7 @@
 					id : node.attr('id'),
 					width: node.attr('width'),
 					height: node.attr('height'),
+					align: node.attr('align'),
 					style : style
 				});
 
@@ -571,7 +573,7 @@
 		 * {'params':{'flashvars':'something','quality':'high','src':'someurl'}, 'video':{'sources':[{src: 'someurl', type: 'video/mp4'}]}}
 		 */
 		objectToImg : function(node) {
-			var object, embed, video, iframe, img, name, id, width, height, style, i, html,
+			var object, embed, video, iframe, img, name, id, width, height, align, style, i, html,
 				param, params, source, sources, data, type, lookup = this.lookup,
 				matches, attrs, urlConverter = this.editor.settings.url_converter,
 				urlConverterScope = this.editor.settings.url_converter_scope;
@@ -599,6 +601,7 @@
 				data = {video : {}, params : JSON.parse(matches[2])};
 				width = data.params.width;
 				height = data.params.height;
+				align = data.params.align;
 			}
 
 			// Setup data objects
@@ -671,6 +674,7 @@
 				width = width || object.attr('width');
 				height = height || object.attr('height');
 				style = style || object.attr('style');
+				align = align || object.attr('align');
 				id = id || object.attr('id');
 
 				// Get all object params
@@ -691,6 +695,7 @@
 				width = width || embed.attr('width');
 				height = height || embed.attr('height');
 				style = style || embed.attr('style');
+				align = align || embed.attr('align');
 				id = id || embed.attr('id');
 
 				// Get all embed attributes
@@ -731,8 +736,14 @@
 			if (video)
 				type = lookup.video.name;
 
-			if (object && !type)
-				type = (lookup[(object.attr('clsid') || '').toLowerCase()] || lookup[(object.attr('type') || '').toLowerCase()] || {}).name;
+			if (object && !type){
+				//fsmedia uses same clsid as flash so check the src
+				if(object.attr('data') === 'cf_media2/mediaPlayer.swf'){
+					type = 'FSMedia';
+				}else{
+					type = (lookup[(object.attr('clsid') || '').toLowerCase()] || lookup[(object.attr('type') || '').toLowerCase()] || {}).name;
+				}
+			}
 
 			if (embed && !type)
 				type = (lookup[(embed.attr('type') || '').toLowerCase()] || {}).name;
@@ -767,6 +778,7 @@
 				style : style,
 				width : width || "320",
 				height : height || "240",
+				align : align || '',
 				"data-mce-json" : JSON.serialize(data, "'")
 			});
 		}
