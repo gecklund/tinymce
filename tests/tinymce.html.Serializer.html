@@ -7,7 +7,7 @@
 <script type="text/javascript" src="qunit/qunit.js"></script>
 <script type="text/javascript" src="qunit/runner.js"></script>
 <script type="text/javascript" src="js/utils.js"></script>
-<script type="text/javascript" src="../jscripts/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="js/tiny_mce_loader.js"></script>
 <script>
 module("tinymce.html.Serializer");
 
@@ -17,7 +17,7 @@ test('Basic serialization', function() {
 	expect(6);
 
 	equals(serializer.serialize(new tinymce.html.DomParser().parse('text<text&')), 'text&lt;text&amp;');
-	equals(serializer.serialize(new tinymce.html.DomParser().parse('<B>text</B><IMG src="1.gif">')), '<strong>text</strong><img src="1.gif" />');
+	equals(serializer.serialize(new tinymce.html.DomParser().parse('<B>text</B><IMG src="1.gif">')), '<strong>text</strong><img src="1.gif" alt="" />');
 	equals(serializer.serialize(new tinymce.html.DomParser().parse('<!-- comment -->')), '<!-- comment -->');
 	equals(serializer.serialize(new tinymce.html.DomParser().parse('<![CDATA[cdata]]>')), '<![CDATA[cdata]]>');
 	equals(serializer.serialize(new tinymce.html.DomParser().parse('<?xml attr="value" ?>')), '<?xml attr="value" ?>');

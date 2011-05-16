@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen">
 <script type="text/javascript" src="qunit/qunit.js"></script>
 <script type="text/javascript" src="qunit/runner.js"></script>
-<script type="text/javascript" src="../jscripts/tiny_mce/tiny_mce.js"></script>
 </head>
 <body>
 <script type="text/javascript">
@@ -19,9 +18,6 @@ if (/Firefox\/2/.test(navigator.userAgent)) {
 		autostart: false
 	});
 
-	function createRng() {
-		return document.createRange ? document.createRange() : new tinymce.dom.Range(tinymce.DOM);
-	};
 
 	function getHTML(co) {
 		var div = document.createElement('div'), h;

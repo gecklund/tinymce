@@ -7,7 +7,7 @@
 <script type="text/javascript" src="qunit/qunit.js"></script>
 <script type="text/javascript" src="qunit/runner.js"></script>
 <script type="text/javascript" src="js/utils.js"></script>
-<script type="text/javascript" src="../jscripts/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="js/tiny_mce_loader.js"></script>
 <script>
 var editor;
 
@@ -259,17 +259,6 @@ test('commands - subscriptSuperscript', function() {
 	equals(editor.getContent(), '<p>test 123</p>');
 });
 
-test('commands - insertHR', function() {
-	var v;
-
-	expect(1);
-
-	editor.setContent('<p>test 123</p>');
-	editor.execCommand('SelectAll');
-	editor.execCommand('InsertHorizontalRule');
-	equals(trimContent(editor.getContent()), '<hr />');
-});
-
 test('commands - indentOutdent', function() {
 	expect(4);
 
@@ -443,6 +432,31 @@ test('WebKit Serialization range bug', function() {
 
 		equals(editor.getContent(), '<p>123</p>\n<table>\n<tbody>\n<tr>\n<td>X</td>\n</tr>\n</tbody>\n</table>\n<p>456</p>');
 	}
+});
+
+test('setContent', function() {
+	var count;
+
+	expect(4);
+
+	function callback(ed, args) {
+		args.content = args.content.replace(/test/, 'X');
+		count++;
+	};
+
+	editor.onSetContent.add(callback);
+	editor.onBeforeSetContent.add(callback);
+	count = 0;
+	editor.setContent('<p>test</p>');
+	equals(editor.getContent(), "<p>X</p>");
+	equals(count, 2);
+	editor.onSetContent.remove(callback);
+	editor.onBeforeSetContent.remove(callback);
+
+	count = 0;
+	editor.setContent('<p>test</p>');
+	equals(editor.getContent(), "<p>test</p>");
+	equals(count, 0);
 });
 
 tinyMCE.init({

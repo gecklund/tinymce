@@ -35,6 +35,7 @@
 		var self = this, nodeFilters = {}, attributeFilters = [], matchedNodes = {}, matchedAttributes = {};
 
 		settings = settings || {};
+		settings.validate = "validate" in settings ? settings.validate : true;
 		settings.root_name = settings.root_name || 'body';
 		self.schema = schema = schema || new tinymce.html.Schema();
 
@@ -89,8 +90,10 @@
 						parent.insert(node, parents[0], true);
 					}
 
-					if (parents[0].isEmpty(nonEmptyElements)) {
-						parents[0].empty().remove();
+					// Check if the element is empty by looking through it's contents and special treatment for <p><br /></p>
+					parent = parents[0];
+					if (parent.isEmpty(nonEmptyElements) || parent.firstChild === parent.lastChild && parent.firstChild.name === 'br') {
+						parent.empty().remove();
 					}
 				} else if (node.parent) {
 					// If it's an LI try to find a UL/OL for it or wrap it
@@ -227,21 +230,45 @@
 		 * @return {tinymce.html.Node} Root node containing the tree.
 		 */
 		self.parse = function(html, args) {
-			var parser, rootNode, node, nodes, i, l, fi, fl, list, name,
+			var parser, rootNode, node, nodes, i, l, fi, fl, list, name, validate,
 				blockElements, startWhiteSpaceRegExp, invalidChildren = [],
-				endWhiteSpaceRegExp, allWhiteSpaceRegExp, whiteSpaceElements, children, nonEmptyElements;
+				endWhiteSpaceRegExp, allWhiteSpaceRegExp, whiteSpaceElements, children, nonEmptyElements, rootBlockName;
 
 			args = args || {};
 			matchedNodes = {};
 			matchedAttributes = {};
-			blockElements = tinymce.extend(tinymce.makeMap('script,style,head,title,meta,param'), schema.getBlockElements());
+			blockElements = tinymce.extend(tinymce.makeMap('script,style,head,html,body,title,meta,param'), schema.getBlockElements());
 			nonEmptyElements = schema.getNonEmptyElements();
 			children = schema.children;
+			validate = settings.validate;
+			rootBlockName = "forced_root_block" in args ? args.forced_root_block : settings.forced_root_block;
 
 			whiteSpaceElements = schema.getWhiteSpaceElements();
 			startWhiteSpaceRegExp = /^[ \t\r\n]+/;
 			endWhiteSpaceRegExp = /[ \t\r\n]+$/;
 			allWhiteSpaceRegExp = /[ \t\r\n]+/g;
+
+			function addRootBlocks() {
+				var node = rootNode.firstChild, next, rootBlockNode;
+
+				while (node) {
+					next = node.next;
+
+					if (node.type == 3 || (node.type == 1 && node.name !== 'p' && !blockElements[node.name] && !node.attr('data-mce-type'))) {
+						if (!rootBlockNode) {
+							// Create a new root block element
+							rootBlockNode = createNode(rootBlockName, 1);
+							rootNode.insert(rootBlockNode, node);
+							rootBlockNode.append(node);
+						} else
+							rootBlockNode.append(node);
+					} else {
+						rootBlockNode = null;
+					}
+
+					node = next;
+				};
+			};
 
 			function createNode(name, type) {
 				var node = new Node(name, type), list;
@@ -258,9 +285,26 @@
 				return node;
 			};
 
+			function removeWhitespaceBefore(node) {
+				var textNode, textVal, sibling;
+
+				for (textNode = node.prev; textNode && textNode.type === 3; ) {
+					textVal = textNode.value.replace(endWhiteSpaceRegExp, '');
+
+					if (textVal.length > 0) {
+						textNode.value = textVal;
+						textNode = textNode.prev;
+					} else {
+						sibling = textNode.prev;
+						textNode.remove();
+						textNode = sibling;
+					}
+				}
+			};
+
 			parser = new tinymce.html.SaxParser({
-				validate : settings.validate,
-				fix_self_closing : false, // Let the DOM parser handle <li> in <li> or <p> in <p> for better results
+				validate : validate,
+				fix_self_closing : !validate, // Let the DOM parser handle <li> in <li> or <p> in <p> for better results
 
 				cdata: function(text) {
 					node.append(createNode('#cdata', 4)).value = text;
@@ -291,16 +335,21 @@
 
 				pi: function(name, text) {
 					node.append(createNode(name, 7)).value = text;
+					removeWhitespaceBefore(node);
 				},
 
 				doctype: function(text) {
-					node.append(createNode('#doctype', 10)).value = text;
+					var newNode;
+		
+					newNode = node.append(createNode('#doctype', 10));
+					newNode.value = text;
+					removeWhitespaceBefore(node);
 				},
 
 				start: function(name, attrs, empty) {
 					var newNode, attrFiltersLen, elementRule, textNode, attrName, text, sibling, parent;
 
-					elementRule = schema.getElementRule(name);
+					elementRule = validate ? schema.getElementRule(name) : {};
 					if (elementRule) {
 						newNode = createNode(elementRule.outputName || name, 1);
 						newNode.attributes = attrs;
@@ -329,20 +378,8 @@
 						}
 
 						// Trim whitespace before block
-						if (blockElements[name]) {
-							for (textNode = newNode.prev; textNode && textNode.type === 3; ) {
-								text = textNode.value.replace(endWhiteSpaceRegExp, '');
-
-								if (text.length > 0) {
-									textNode.value = text;
-									textNode = textNode.prev;
-								} else {
-									sibling = textNode.prev;
-									textNode.remove();
-									textNode = sibling;
-								}
-							}
-						}
+						if (blockElements[name])
+							removeWhitespaceBefore(newNode);
 
 						// Change current node if the element wasn't empty i.e not <br /> or <img />
 						if (!empty)
@@ -353,7 +390,7 @@
 				end: function(name) {
 					var textNode, elementRule, text, sibling, tempNode;
 
-					elementRule = schema.getElementRule(name);
+					elementRule = validate ? schema.getElementRule(name) : {};
 					if (elementRule) {
 						if (blockElements[name]) {
 							if (!whiteSpaceElements[node.name]) {
@@ -420,34 +457,28 @@
 				}
 			}, schema);
 
-			rootNode = node = new Node(settings.root_name, 11);
+			rootNode = node = new Node(args.context || settings.root_name, 11);
 
 			parser.parse(html);
 
-			fixInvalidChildren(invalidChildren);
-
-			// Run node filters
-			for (name in matchedNodes) {
-				list = nodeFilters[name];
-				nodes = matchedNodes[name];
-
-				// Remove already removed children
-				fi = nodes.length;
-				while (fi--) {
-					if (!nodes[fi].parent)
-						nodes.splice(fi, 1);
-				}
-
-				for (i = 0, l = list.length; i < l; i++)
-					list[i](nodes, name, args);
+			// Fix invalid children or report invalid children in a contextual parsing
+			if (validate && invalidChildren.length) {
+				if (!args.context)
+					fixInvalidChildren(invalidChildren);
+				else
+					args.invalid = true;
 			}
 
-			// Run attribute filters
-			for (i = 0, l = attributeFilters.length; i < l; i++) {
-				list = attributeFilters[i];
+			// Wrap nodes in the root into block elements if the root is body
+			if (rootBlockName && rootNode.name == 'body')
+				addRootBlocks();
 
-				if (list.name in matchedAttributes) {
-					nodes = matchedAttributes[list.name];
+			// Run filters only when the contents is valid
+			if (!args.invalid) {
+				// Run node filters
+				for (name in matchedNodes) {
+					list = nodeFilters[name];
+					nodes = matchedNodes[name];
 
 					// Remove already removed children
 					fi = nodes.length;
@@ -456,8 +487,27 @@
 							nodes.splice(fi, 1);
 					}
 
-					for (fi = 0, fl = list.callbacks.length; fi < fl; fi++)
-						list.callbacks[fi](nodes, list.name, args);
+					for (i = 0, l = list.length; i < l; i++)
+						list[i](nodes, name, args);
+				}
+
+				// Run attribute filters
+				for (i = 0, l = attributeFilters.length; i < l; i++) {
+					list = attributeFilters[i];
+
+					if (list.name in matchedAttributes) {
+						nodes = matchedAttributes[list.name];
+
+						// Remove already removed children
+						fi = nodes.length;
+						while (fi--) {
+							if (!nodes[fi].parent)
+								nodes.splice(fi, 1);
+						}
+
+						for (fi = 0, fl = list.callbacks.length; fi < fl; fi++)
+							list.callbacks[fi](nodes, list.name, args);
+					}
 				}
 			}
 

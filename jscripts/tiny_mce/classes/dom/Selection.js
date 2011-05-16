@@ -114,6 +114,7 @@
 			wb = wa = '';
 			s.get = true;
 			s.format = s.format || 'html';
+			s.forced_root_block = '';
 			t.onBeforeGetContent.dispatch(t, s);
 
 			if (s.format == 'text')
@@ -210,7 +211,12 @@
 
 				// Remove the caret position
 				self.dom.remove('__caret');
-				self.setRng(rng);
+
+				try {
+					self.setRng(rng);
+				} catch (ex) {
+					// Might fail on Opera for some odd reason
+				}
 			} else {
 				if (rng.item) {
 					// Delete content and get caret text selection
@@ -377,6 +383,9 @@
 					return bookmark;
 				};
 
+				if (t.tridentSel)
+					return t.tridentSel.getBookmark(type);
+
 				return getLocation();
 			}
 
@@ -403,6 +412,12 @@
 						// Insert end marker
 						if (!collapsed) {
 							rng2.collapse(false);
+
+							// Detect the empty space after block elements in IE and move the end back one character <p></p>] becomes <p>]</p>
+							rng.moveToElementText(rng2.parentElement());
+							if (rng.compareEndPoints('StartToEnd', rng2) == 0)
+								rng2.move('character', -1);
+
 							rng2.pasteHTML('<span data-mce-type="bookmark" id="' + id + '_end" style="' + styles + '">' + chr + '</span>');
 						}
 					} catch (ex) {
@@ -458,10 +473,6 @@
 		moveToBookmark : function(bookmark) {
 			var t = this, dom = t.dom, marker1, marker2, rng, root, startContainer, endContainer, startOffset, endOffset;
 
-			// Clear selection cache
-			if (t.tridentSel)
-				t.tridentSel.destroy();
-
 			if (bookmark) {
 				if (bookmark.start) {
 					rng = dom.createRng();
@@ -500,6 +511,9 @@
 
 						return true;
 					};
+
+					if (t.tridentSel)
+						return t.tridentSel.moveToBookmark(bookmark);
 
 					if (setEndPoint(true) && setEndPoint()) {
 						t.setRng(rng);
@@ -764,7 +778,13 @@
 
 				if (s) {
 					t.explicitRange = r;
-					s.removeAllRanges();
+
+					try {
+						s.removeAllRanges();
+					} catch (ex) {
+						// IE9 might throw errors here don't know why
+					}
+
 					s.addRange(r);
 					t.selectedRange = s.getRangeAt(0);
 				}
@@ -897,9 +917,6 @@
 			var t = this;
 
 			t.win = null;
-
-			if (t.tridentSel)
-				t.tridentSel.destroy();
 
 			// Manual destroy then remove unload handler
 			if (!s)

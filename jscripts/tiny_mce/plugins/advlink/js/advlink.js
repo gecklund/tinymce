@@ -23,16 +23,13 @@ function init() {
 	tinyMCEPopup.resizeToInnerSize();
 
 	var formObj = document.forms[0];
-	var inst = tinyMCEPopup.editor;	
+	var inst = tinyMCEPopup.editor;
 	var elm = inst.selection.getNode();
-	var sel = inst.selection.getSel();
 	var action = "insert";
 	var html;
-	
+
 	document.getElementById('hrefbrowsercontainer').innerHTML = getBrowserHTML('hrefbrowser','href','file','advlink');
 	document.getElementById('popupurlbrowsercontainer').innerHTML = getBrowserHTML('popupurlbrowser','popupurl','file','advlink');
-	document.getElementById('linklisthrefcontainer').innerHTML = getLinkListHTML('linklisthref','href');
-	document.getElementById('anchorlistcontainer').innerHTML = getAnchorListHTML('anchorlist','href');
 	document.getElementById('targetlistcontainer').innerHTML = getTargetListHTML('targetlist','target');
 
 	// Link list
@@ -42,21 +39,23 @@ function init() {
 	else
 		document.getElementById("linklisthrefcontainer").innerHTML = html;
 
+	// Anchor list
+	html = getAnchorListHTML('anchorlist','href');
+	if (html == "")
+		document.getElementById("anchorlistrow").style.display = 'none';
+	else
+		document.getElementById("anchorlistcontainer").innerHTML = html;
+
 	// Resize some elements
 	if (isVisible('hrefbrowser'))
 		document.getElementById('href').style.width = '260px';
 
 	if (isVisible('popupurlbrowser'))
 		document.getElementById('popupurl').style.width = '180px';
-	
-	elm = inst.dom.getParent(elm, "A");
 
-	//try the focus node..
-	if(elm === null){
-		elm = inst.dom.getParent(sel.focusNode, "A");
-	}
+	elm = inst.dom.getParent(elm, "A");
 	if (elm != null && elm.nodeName == "A")
-		action = "update";	
+		action = "update";
 
 	formObj.insert.value = tinyMCEPopup.getLang(action, 'Insert', true); 
 
@@ -287,7 +286,7 @@ function buildOnClick() {
 	var url = formObj.popupurl.value;
 
 	onclick += url + "','";
-	onclick += formObj.popupname.value.replace(/\s/gi, "") + "','";
+	onclick += formObj.popupname.value + "','";
 
 	if (formObj.popuplocation.checked)
 		onclick += "location=yes,";
@@ -366,20 +365,22 @@ function setAttrib(elm, attrib, value) {
 }
 
 function getAnchorListHTML(id, target) {
-	var inst = tinyMCEPopup.editor;
-	var nodes = inst.dom.select('a.mceItemAnchor,img.mceItemAnchor'), name, i;
-	var html = "";
+	var ed = tinyMCEPopup.editor, nodes = ed.dom.select('a'), name, i, len, html = "";
 
-	html += '<select id="' + id + '" name="' + id + '" class="mceAnchorList" o2nfocus="tinyMCE.addSelectAccessibility(event, this, window);" onchange="this.form.' + target + '.value=';
-	html += 'this.options[this.selectedIndex].value;">';
-	html += '<option value="">---</option>';
-
-	for (i=0; i<nodes.length; i++) {
-		if ((name = inst.dom.getAttrib(nodes[i], "name")) != "")
+	for (i=0, len=nodes.length; i<len; i++) {
+		if ((name = ed.dom.getAttrib(nodes[i], "name")) != "")
 			html += '<option value="#' + name + '">' + name + '</option>';
 	}
 
-	html += '</select>';
+	if (html == "")
+		return "";
+
+	html = '<select id="' + id + '" name="' + id + '" class="mceAnchorList"'
+		+ ' onchange="this.form.' + target + '.value=this.options[this.selectedIndex].value"'
+		+ '>'
+		+ '<option value="">---</option>'
+		+ html
+		+ '</select>';
 
 	return html;
 }

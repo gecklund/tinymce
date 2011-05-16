@@ -192,12 +192,12 @@ desc:"Toggle spellchecker",
 menu:"Spellchecker settings",
 ignore_word:"Ignore word",
 ignore_words:"Ignore all",
-learn_word:"Learn word",
 langs:"Languages",
 wait:"Please wait...",
 sug:"Suggestions",
 no_sug:"No suggestions",
-no_mpell:"No misspellings found."
+no_mpell:"No misspellings found.",
+learn_word:"Learn word" 
 },
 pagebreak:{
 desc:"Insert page break."

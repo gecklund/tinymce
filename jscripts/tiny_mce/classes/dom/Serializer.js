@@ -103,7 +103,7 @@
 
 			while (i--) {
 				node = nodes[i];
-				value = node.attr('class').replace(/\s*mceItem\w+\s*/g, '');
+				value = node.attr('class').replace(/\s*mce(Item\w+|Selected)\s*/g, '');
 				node.attr('class', value.length > 0 ? value : null);
 			}
 		});
@@ -333,6 +333,10 @@
 				args.content = htmlSerializer.serialize(
 					htmlParser.parse(args.getInner ? node.innerHTML : tinymce.trim(dom.getOuterHTML(node), args), args)
 				);
+
+				// Replace all BOM characters for now until we can find a better solution
+				if (!args.cleanup)
+					args.content = args.content.replace(/\uFEFF/g, '');
 
 				// Post process
 				if (!args.no_events)

@@ -46,15 +46,23 @@
 					{title: 'Editor tests', tests: [
 						{title: 'Core API', url: 'api.html'},
 						{title: 'Basic functionality', url: 'basic.html'},
-						{title: 'Remove', url: 'remove.html'}
+						{title: 'Remove', url: 'remove.html', jsrobot: true},
+						{title: 'Undo', url: 'undo.html', jsrobot: true}
 					]},
 
 					{title: 'Plugins tests', tests: [
 						{title: 'Media plugin', url: 'media.html'},
 						{title: 'Paste plugin', url: 'paste.html'},
 						{title: 'jQuery plugin', url: 'jquery_plugin.html'},
+						{title: 'Autolink plugin', url: 'autolink.html', jsrobot: true},
 						{title: 'Wordcount plugin', url: 'wordcount.html'},
-						{title: 'Fullpage plugin', url: 'fullpage.html'}
+						{title: 'Fullpage plugin', url: 'fullpage.html'},
+						{title: 'Plugin Dependencies', url: 'plugin_dependency_simple.html'},
+						{title: 'Plugin Dependency Chain', url: 'plugin_dependency_chain.html'},
+						{title: 'Plugin Dependency Chain Legacy', url: 'plugin_dependency_chain_legacy.html'},
+						{title: 'Dependency Chain Init Call Order', url: 'plugin_dependency_init_call_order.html'},
+						{title: 'Dependency With Specific Location', url: 'plugin_dependency_specific_location.html'}
+
 					]},
 
 					{title: 'tinymce.dom', tests: [
@@ -96,6 +104,12 @@
 						{title: 'JSON', url: 'tinymce.util.JSON.html'},
 						{title: 'XHR', url: 'tinymce.util.XHR.html'},
 						{title: 'JSONRequest', url: 'tinymce.util.JSONRequest.html'}
+					]},
+
+					{title: 'List tests', tests: [
+	                    {title: 'Applying lists', url: 'lists_applying.html', jsrobot: true},
+	                    {title: 'Indenting lists', url: 'lists_indenting.html', jsrobot: true},
+	                    {title: 'Forced BRs', url: 'lists_forced_brs.html', jsrobot: true}
 					]}
 				]
 			]
@@ -107,7 +121,7 @@
 <h1 id="qunit-header">TinyMCE Unit Tests</h1>
 <div id="total_status"></div>
 <div id="menu"></div>
-<div><input type="button" value="Run all" onclick="QUnitRunner.run();" /></div>
+<div><input type="button" value="Run all" onclick="QUnitRunner.run();" /><input type="checkbox" id="min" name="min" checked="checked" /> Run on minified code <input type="checkbox" id="jsrobot" name="jsrobot" checked="checked" /> JSRobot tests</div>
 <div id="log"></div>
 
 </body>
