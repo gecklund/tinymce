@@ -601,7 +601,7 @@
 				if (node.firstChild)
 					matches = scriptRegExp.exec(node.firstChild.value);
 
-				if (!matches)
+				if (!matches || typeof(JSON.parse(matches[2])) != 'object')// FSfix: [BUG-8376]	helps avoid conflicts with our own writeFlash function
 					return;
 
 				type = matches[1];

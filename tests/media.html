@@ -22,16 +22,16 @@ test("Flash (strict output/relative urls)", function() {
 	editor.settings.relative_urls = true;
 
 	editor.setContent('<object width="425" height="355"><param name="movie" value="someurl"></param><param name="wmode" value="transparent"></param><embed src="someurl" type="application/x-shockwave-flash" wmode="transparent" width="425" height="355" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="someurl" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="someurl" /></object></p>');
 
 	editor.setContent('<object width="425" height="355"><param name="movie" value="someurl"></param><param name="wmode" value="transparent"></param><embed src="someurl" type="application/x-shockwave-flash" wmode="transparent" width="425" height="355" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="someurl" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="someurl" /></object></p>');
 
 	editor.setContent('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="425" height="355" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" /><embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" wmode="transparent" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="someurl" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="someurl" /></object></p>');
 
 	editor.setContent('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="425" height="355" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" />test<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" wmode="transparent" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="someurl" />test</object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="someurl" />test</object></p>');
 });
 
 test("Flash (strict output/absolute urls)", function() {
@@ -41,34 +41,34 @@ test("Flash (strict output/absolute urls)", function() {
 	editor.settings.relative_urls = 0;
 
 	editor.setContent('<object width="425" height="355"><param name="movie" value="someurl"></param><param name="wmode" value="transparent"></param><embed src="someurl" type="application/x-shockwave-flash" wmode="transparent" width="425" height="355" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
 
 	editor.setContent('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="425" height="355" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" /><embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" wmode="transparent" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="wmode" value="transparent" /><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
 
 	editor.setContent('<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" flashvars="m=7286090&v=2&type=video" />');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /></object></p>');
 
 	editor.setContent('<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" flashvars="m=7286090&v=2&type=video" /><p>text</p>');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /></object></p>\n<p>text</p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /></object></p>\n<p>text</p>');
 
 	editor.setContent('<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" flashvars="m=7286090&v=2&type=video"><p>text</p>');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /></object></p>\n<p>text</p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /></object></p>\n<p>text</p>');
 
 	editor.setContent('<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" flashvars="m=7286090&v=2&type=video" /><p>text</p>');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /></object></p>\n<p>text</p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /></object></p>\n<p>text</p>');
 
 	editor.setContent('<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" flashvars="m=7286090&v=2&type=video" /><p>text</p>');
-	equals(editor.getContent(), '<p><object width="425" height="355" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /></object></p>\n<p>text</p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /></object></p>\n<p>text</p>');
 
 	editor.setContent('<object width="320" height="240"><embed src="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash" width="320" height="240" /></object>');
-	equals(editor.getContent(), '<p><object width="320" height="240" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
+	equals(editor.getContent(), '<p><object width="320" height="240" align="" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
 
 	editor.setContent('<object width="320" height="240" style="width: 320px; height: 240px;"><embed src="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash" width="320" height="240" /></object>');
-	equals(editor.getContent(), '<p><object style="width: 320px; height: 240px;" width="320" height="240" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
+	equals(editor.getContent(), '<p><object style="width: 320px; height: 240px;" width="320" height="240" align="" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
 
 	editor.setContent('<object data="/tinymce/tinymce/trunk/tests/someurl" width="320" height="240" type="application/x-shockwave-flash"></object>');
-	equals(editor.getContent(), '<p><object width="320" height="240" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
+	equals(editor.getContent(), '<p><object width="320" height="240" align="" data="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
 });
 
 test("Flash (compatible output/relative urls)", function() {
@@ -78,13 +78,13 @@ test("Flash (compatible output/relative urls)", function() {
 	editor.settings.relative_urls = true;
 
 	editor.setContent('<object width="425" height="355"><param name="movie" value="someurl"></param><param name="wmode" value="transparent"></param><embed src="someurl" type="application/x-shockwave-flash" wmode="transparent" width="425" height="355" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" /><embed width="425" height="355" type="application/x-shockwave-flash" src="someurl" wmode="transparent" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" /><embed width="425" height="355" type="application/x-shockwave-flash" src="someurl" wmode="transparent" /></object></p>');
 
 	editor.setContent('<object width="425" height="355"><param name="movie" value="someurl"></param><param name="wmode" value="transparent"></param><embed src="someurl" type="application/x-shockwave-flash" wmode="transparent" width="425" height="355" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" /><embed width="425" height="355" type="application/x-shockwave-flash" src="someurl" wmode="transparent" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" /><embed width="425" height="355" type="application/x-shockwave-flash" src="someurl" wmode="transparent" /></object></p>');
 
 	editor.setContent('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="425" height="355" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" /><embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" wmode="transparent" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" /><embed width="425" height="355" type="application/x-shockwave-flash" src="someurl" wmode="transparent" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" /><embed width="425" height="355" type="application/x-shockwave-flash" src="someurl" wmode="transparent" /></object></p>');
 });
 
 test("Flash (compatible output/absolute urls)", function() {
@@ -94,31 +94,31 @@ test("Flash (compatible output/absolute urls)", function() {
 	editor.settings.relative_urls = false;
 
 	editor.setContent('<object width="425" height="355"><param name="movie" value="someurl"></param><param name="wmode" value="transparent"></param><embed src="someurl" type="application/x-shockwave-flash" wmode="transparent" width="425" height="355" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" wmode="transparent" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" wmode="transparent" /></object></p>');
 
 	editor.setContent('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="425" height="355" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="someurl" /><embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" wmode="transparent" /></object>');
-	equals(editor.getContent(), '<p><object width="425" height="355" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" wmode="transparent" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="wmode" value="transparent" /><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" wmode="transparent" /></object></p>');
 
 	editor.setContent('<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" flashvars="m=7286090&v=2&type=video" />');
-	equals(editor.getContent(), '<p><object width="425" height="355" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" flashvars="m=7286090&amp;v=2&amp;type=video" /></object></p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" flashvars="m=7286090&amp;v=2&amp;type=video" /></object></p>');
 
 	editor.setContent('<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" flashvars="m=7286090&v=2&type=video" />text');
-	equals(editor.getContent(), '<p><object width="425" height="355" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" flashvars="m=7286090&amp;v=2&amp;type=video" /></object>text</p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" flashvars="m=7286090&amp;v=2&amp;type=video" /></object>text</p>');
 
 	editor.setContent('<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" flashvars="m=7286090&v=2&type=video">text');
-	equals(editor.getContent(), '<p><object width="425" height="355" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" flashvars="m=7286090&amp;v=2&amp;type=video" /></object>text</p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" flashvars="m=7286090&amp;v=2&amp;type=video" /></object>text</p>');
 
 	editor.setContent('<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" flashvars="m=7286090&v=2&type=video" />text');
-	equals(editor.getContent(), '<p><object width="425" height="355" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" flashvars="m=7286090&amp;v=2&amp;type=video" /></object>text</p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" flashvars="m=7286090&amp;v=2&amp;type=video" /></object>text</p>');
 
 	editor.setContent('<embed type="application/x-shockwave-flash" width="425" height="355" src="someurl" flashvars="m=7286090&v=2&type=video" />text');
-	equals(editor.getContent(), '<p><object width="425" height="355" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" flashvars="m=7286090&amp;v=2&amp;type=video" /></object>text</p>');
+	equals(editor.getContent(), '<p><object width="425" height="355" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><param name="flashvars" value="m=7286090&amp;v=2&amp;type=video" /><embed width="425" height="355" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" flashvars="m=7286090&amp;v=2&amp;type=video" /></object>text</p>');
 
 	editor.setContent('<object width="320" height="240"><embed src="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash" width="320" height="240" /></object>');
-	equals(editor.getContent(), '<p><object width="320" height="240" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><embed width="320" height="240" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
+	equals(editor.getContent(), '<p><object width="320" height="240" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><embed width="320" height="240" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
 
 	editor.setContent('<object width="320" height="240" style="width: 320px; height: 240px;"><embed src="/tinymce/tinymce/trunk/tests/someurl" type="application/x-shockwave-flash" width="320" height="240" /></object>');
-	equals(editor.getContent(), '<p><object style="width: 320px; height: 240px;" width="320" height="240" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><embed style="width: 320px; height: 240px;" width="320" height="240" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
+	equals(editor.getContent(), '<p><object style="width: 320px; height: 240px;" width="320" height="240" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="/tinymce/tinymce/trunk/tests/someurl" /><embed style="width: 320px; height: 240px;" width="320" height="240" type="application/x-shockwave-flash" src="/tinymce/tinymce/trunk/tests/someurl" /></object></p>');
 });
 
 test("Quicktime (compatible output/relative urls)", function() {
@@ -128,7 +128,7 @@ test("Quicktime (compatible output/relative urls)", function() {
 	editor.settings.relative_urls = true;
 
 	editor.setContent('<object classid="clsid:02bf25d5-8c17-4b23-bc80-d3488abddc6b" width="320" height="240" codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=6,0,2,0"><param name="src" value="test" /><embed type="video/quicktime" width="320" height="240" src="test" /></object>');
-	equals(editor.getContent(), '<p><object width="320" height="240" classid="clsid:02bf25d5-8c17-4b23-bc80-d3488abddc6b" codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=6,0,2,0"><param name="src" value="test" /><embed width="320" height="240" type="video/quicktime" src="test" /></object></p>');
+	equals(editor.getContent(), '<p><object width="320" height="240" align="" classid="clsid:02bf25d5-8c17-4b23-bc80-d3488abddc6b" codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=6,0,2,0"><param name="src" value="test" /><embed width="320" height="240" type="video/quicktime" src="test" /></object></p>');
 });
 
 test("WindowsMedia (compatible output/relative urls)", function() {
@@ -138,7 +138,7 @@ test("WindowsMedia (compatible output/relative urls)", function() {
 	editor.settings.relative_urls = true;
 
 	editor.setContent('<object classid="clsid:6bf52a52-394a-11d3-b153-00c04f79faa6" width="320" height="240" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=5,1,52,701" id="test"><param name="src" value="test" /><embed id=\"test\" type="application/x-mplayer2" width="320" height="240" src="test" /></object>');
-	equals(editor.getContent(), '<p><object id=\"test\" width="320" height="240" classid="clsid:6bf52a52-394a-11d3-b153-00c04f79faa6" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=5,1,52,701"><param name="url" value="test" /><embed id=\"test\" width="320" height="240" type="application/x-mplayer2" src="test" /></object></p>');
+	equals(editor.getContent(), '<p><object id=\"test\" width="320" height="240" align="" classid="clsid:6bf52a52-394a-11d3-b153-00c04f79faa6" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=5,1,52,701"><param name="url" value="test" /><embed id=\"test\" width="320" height="240" type="application/x-mplayer2" src="test" /></object></p>');
 });
 
 test("Realmedia (compatible output/relative urls)", function() {
@@ -148,7 +148,7 @@ test("Realmedia (compatible output/relative urls)", function() {
 	editor.settings.relative_urls = true;
 
 	editor.setContent('<object classid="clsid:cfcdaa03-8be4-11cf-b84b-0020afbbccfa" width="320" height="240" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="test" /><embed type="audio/x-pn-realaudio-plugin" width="320" height="240" src="test" /></object>');
-	equals(editor.getContent(), '<p><object width="320" height="240" classid="clsid:cfcdaa03-8be4-11cf-b84b-0020afbbccfa" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="test" /><embed width="320" height="240" type="audio/x-pn-realaudio-plugin" src="test" /></object></p>');
+	equals(editor.getContent(), '<p><object width="320" height="240" align="" classid="clsid:cfcdaa03-8be4-11cf-b84b-0020afbbccfa" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="test" /><embed width="320" height="240" type="audio/x-pn-realaudio-plugin" src="test" /></object></p>');
 });
 
 test("Shockwave (compatible output/relative urls)", function() {
@@ -158,7 +158,7 @@ test("Shockwave (compatible output/relative urls)", function() {
 	editor.settings.relative_urls = true;
 
 	editor.setContent('<object classid="clsid:166b1bca-3f9c-11cf-8075-444553540000" width="320" height="240" codebase="http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab#version=8,5,1,0"><param name="src" value="test" /><embed type="application/x-director" width="320" height="240" src="test" /></object>');
-	equals(editor.getContent(), '<p><object width="320" height="240" classid="clsid:166b1bca-3f9c-11cf-8075-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab#version=8,5,1,0"><param name="src" value="test" /><embed width="320" height="240" type="application/x-director" src="test" /></object></p>');
+	equals(editor.getContent(), '<p><object width="320" height="240" align="" classid="clsid:166b1bca-3f9c-11cf-8075-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab#version=8,5,1,0"><param name="src" value="test" /><embed width="320" height="240" type="application/x-director" src="test" /></object></p>');
 });
 
 test("Video (attributes)", function() {
@@ -299,7 +299,7 @@ test("Internal dataToHtml", function() {
 			video: {}
 		}),
 
-		'<object width="320" height="240" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="url" /><embed width="320" height="240" type="application/x-shockwave-flash" src="url" /></object>'
+		'<object width="320" height="240" align="" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="url" /><embed width="320" height="240" type="application/x-shockwave-flash" src="url" /></object>'
 	);
 });
 
