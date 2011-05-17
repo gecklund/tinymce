@@ -55,3 +55,4 @@ popup.cfm
 stylesheet.cfm
 templatepopup.cfm
 
+tools/ant/.*

@@ -1063,7 +1063,8 @@
 					ed.onPreProcess.add(function(ed, o) {
 						var last = o.node.lastChild;
 
-						if (last && last.childNodes.length == 1 && last.firstChild.nodeName == 'BR')
+						if (last && last.childNodes.length == 1 && last.firstChild.nodeName == 'BR' 
+							&& last.firstChild.getAttribute('mce_bogus') == 1)//FSfix: [BUG-8396] fixes issue where a last empty div is removed instead	
 							ed.dom.remove(last);
 					});
 
