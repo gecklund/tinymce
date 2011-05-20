@@ -2,7 +2,7 @@ tinyMCEPopup.requireLangPack();
 tinyMCEPopup.onInit.add(onLoadInit);
 
 function saveContent() {
-	tinyMCEPopup.editor.setContent(document.getElementById('htmlSource').value, {source_view : true, format : 'raw'});
+	tinyMCEPopup.editor.setContent(document.getElementById('htmlSource').value, {source_view : true});
 	tinyMCEPopup.close();
 }
 

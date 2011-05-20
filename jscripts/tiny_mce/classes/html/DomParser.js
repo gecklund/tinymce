@@ -119,9 +119,10 @@
 						node.wrap(self.filterNode(new Node('div', 1)));
 					} else {
 						// We failed wrapping it, then remove or unwrap it
-						if (node.name === 'style' || node.name === 'script')
-							node.empty().remove();
-						else
+						if (node.name === 'style' || node.name === 'script'){
+							//node.empty().remove();
+							//FSfix: [BUG-8365]	fixing stripped style tags; may be a better fix for this. Don't fully understand why this code removes the whole node
+						}else
 							node.unwrap();
 					}
 				}
