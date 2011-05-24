@@ -36,6 +36,16 @@ test('Preserving elements', function() {
 	editor.setContent('<div class="imEmpty"></div>');
 	equals(editor.getContent(), '<div class="imEmpty"></div>');
 	
+	//nbsp in a p tag helps it to display the margining intended
+	//empty p tags cb:8502
+	editor.setContent('<p></p>\n<p>test</p>');
+	equals(editor.getContent(), '<p>&nbsp;</p>\n<p>test</p>');
+	
+	//we want nbsp for these empty elements because they alleviate some cursor issues in some browsers
+	//empty td/th tags cb:8369
+	editor.setContent('<table><thead><tr><th>h1</th><th></th></tr></thead><tbody><tr><td>one</td><td>two</td></tr><tr><td></td><td>--empty</td></tr></tbody></table>');
+	equals(editor.getContent(), '<table>\n<thead>\n<tr><th>h1</th><th>&nbsp;</th></tr>\n</thead>\n<tbody>\n<tr>\n<td>one</td>\n<td>two</td>\n</tr>\n<tr>\n<td>&nbsp;</td>\n<td>--empty</td>\n</tr>\n</tbody>\n</table>');
+	
 });
 
 test('Media', function() {
