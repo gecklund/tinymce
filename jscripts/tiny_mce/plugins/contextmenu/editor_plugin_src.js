@@ -44,7 +44,7 @@
 
 			showMenu = ed.onContextMenu.add(function(ed, e) {
 				// Block TinyMCE menu on ctrlKey and work around Safari issue
-				if ((realCtrlKey !== 0 ? realCtrlKey : e.ctrlKey) && !contextmenuNeverUseNative)
+				if ((realCtrlKey !== 0 ? realCtrlKey : e.ctrlKey) && (!tinymce.isMac || e.button == 2) && !contextmenuNeverUseNative)
 					return;
 
 				Event.cancel(e);
@@ -71,7 +71,7 @@
 
 				// Since the contextmenu event moves
 				// the selection we need to store it away
-				if (e && e.button == 2) {
+				if (e && (e.button == 2) || (e.button == 0 && e.ctrlKey && tinymce.isMac) ) {
 					realCtrlKey = e.ctrlKey;
 					return;
 				}
