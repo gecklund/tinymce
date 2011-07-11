@@ -415,6 +415,10 @@
 						if (elements[node.name])
 							return false;
 
+						//FSFIX: 8580 Keep elements with any attributes
+						if(node.attributes.length)
+							return false;
+						
 						// Keep elements with data attributes or name attribute like <a name="1"></a>
 						i = node.attributes.length;
 						while (i--) {
