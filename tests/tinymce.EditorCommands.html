@@ -3,14 +3,16 @@
 <head>
 <title>Unit tests for tinymce.EditorCommands</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen">
-<script type="text/javascript" src="qunit/qunit.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css" type="text/css" />
+<script src="http://code.jquery.com/qunit/qunit-git.js"></script>
+<script src="qunit/connector.js"></script>
 <script type="text/javascript" src="qunit/runner.js"></script>
 <script type="text/javascript" src="js/utils.js"></script>
 <script type="text/javascript" src="js/tiny_mce_loader.js"></script>
 <script>
 var editor;
 
+QUnit.config.reorder = false;
 QUnit.config.autostart = false;
 module("tinymce.EditorCommands", {
 	autostart: false
@@ -26,6 +28,7 @@ test('mceInsertContent - p inside text of p', function() {
 	expect(7);
 
 	editor.setContent('<p>1234</p>');
+	editor.focus();
 	rng = editor.dom.createRng();
 	rng.setStart(editor.dom.select('p')[0].firstChild, 1);
 	rng.setEnd(editor.dom.select('p')[0].firstChild, 3);
@@ -213,7 +216,7 @@ test('mceInsertContent - legacy content', function() {
 	rng.setEnd(editor.dom.select('p')[0].firstChild, 1);
 	editor.selection.setRng(rng);
 	editor.execCommand('mceInsertContent', false, '<u>u</u><strike>strike</strike><font size="7">font</font>');
-	equals(editor.getContent(), '<p><span style="text-decoration: underline;">u</span><span style="text-decoration: line-through;">strike</span><span style="font-size: xx-large;">font</span></p>');
+	equals(editor.getContent(), '<p><span style="text-decoration: underline;">u</span><span style="text-decoration: line-through;">strike</span><span style="font-size: 300%;">font</span></p>');
 });
 
 test('mceInsertContent - hr', function() {
@@ -259,6 +262,19 @@ test('mceInsertContent - mixed inline content inside td', function() {
 	setSelection('td', 0, 'td', 0);
 	editor.execCommand('mceInsertContent', false, 'test<b>123</b><!-- a -->');
 	equals(editor.getContent(), '<table><tbody><tr><td>test<strong>123</strong><!-- a -->X</td></tr></tbody></table>');
+});
+
+test('mceInsertContent - invalid insertion with spans on page', function(){
+	var startingContent = '<p>123 testing <span>span later in document</span></p>',
+		insertedContent = '<ul><li>u</li><li>l</li></ul>';
+	editor.setContent(startingContent);
+	rng = editor.dom.createRng();
+	rng.setStart(editor.dom.select('p')[0].firstChild, 0);
+	rng.setEnd(editor.dom.select('p')[0].firstChild, 0);
+	editor.selection.setRng(rng);
+	editor.execCommand('mceInsertContent', false, insertedContent);
+
+	equals(editor.getContent(), insertedContent + startingContent);
 });
 
 test('InsertHorizontalRule', function() {

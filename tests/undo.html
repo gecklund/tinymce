@@ -2,12 +2,14 @@
 <html>
 <head>
 <title>Undo Tests</title>
-<link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen">
-<script type="text/javascript" src="qunit/qunit.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css" type="text/css" />
+<script src="http://code.jquery.com/qunit/qunit-git.js"></script>
+<script src="qunit/connector.js"></script>
 <script type="text/javascript" src="qunit/runner.js"></script>
 <script type="text/javascript" src="js/utils.js"></script>
 <script type="text/javascript" src="js/tiny_mce_loader.js"></script>
 <script>
+QUnit.config.reorder = false;
 QUnit.config.autostart = false;
 
 module('Undo', {
@@ -18,15 +20,31 @@ function isUndoEnabled() {
 	return !editor.controlManager.get('undo').isDisabled();
 }
 
+// The following code never made it into the main codebase -- but it might be useful one day.  
+// If you're seeing this in August 2011 or later, please delete.			
+			// in webkit the iframe window needs to be given focus before selection
+			// will behave correctly.  This code assigns focus to the tinymce window, giving it back to the
+			// main window if it started with it.
+//			if (tinymce.isWebKit) {
+//				var hadFocus = document.hasFocus();
+//				t.getWin().focus();
+//				if (hadFocus) {
+//					window.focus();
+//				}
+//			}
+
+
 function assertUndoEnabledWhenTyping(c, expectedContent) {
 	editor.setContent('<p>Content</p>');
 
 	editor.undoManager.clear();
 	editor.undoManager.add();
 	editor.execCommand('mceRepaint');
+	// Need to focus the editor before setting selection in order to get the editor typing working correctly.
+	// All evidence points to the normal APIs not needing an editor.focus() call
+	editor.focus();
 	setSelection('p', 4);
 	ok(!isUndoEnabled(), 'Undo starts disabled.');
-	editor.focus();
 	robot.type(c, false, function() {
 		equals(editor.getContent(), expectedContent);
 		ok(isUndoEnabled(), 'Undo is enabled.');
@@ -63,19 +81,19 @@ asyncTest('Forward delete triggers undo in IE', function() {
 		QUnit.start();
 	}, editor.selection.getNode());
 });
-
-tinyMCE.init({
-	mode : "exact",
-	elements : "elm1",
-	theme : "advanced",
-	cleanup: true,
-	add_unload_trigger : false,
-	apply_source_formatting : 0,
-	init_instance_callback : function(ed) {
-		editor = ed;
-	}
-});
-
+var initTinyFunction = function(){
+	tinyMCE.init({
+		mode : "exact",
+		elements : "elm1",
+		theme : "advanced",
+		cleanup: true,
+		add_unload_trigger : false,
+		apply_source_formatting : 0,
+		init_instance_callback : function(ed) {
+			editor = ed;
+		}
+	});
+}
 </script>
 </head>
 <body>
@@ -90,7 +108,7 @@ tinyMCE.init({
 	</div>
 	<script type="text/javascript" language="JavaScript" src="jsrobot/robot.js"></script>
 	<script>
-	initWhenTinyAndRobotAreReady();
+	initWhenTinyAndRobotAreReady(initTinyFunction);
 	</script>
 </body>
 </html>

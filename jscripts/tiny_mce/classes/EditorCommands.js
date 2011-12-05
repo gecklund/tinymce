@@ -23,6 +23,7 @@
 			selection = editor.selection,
 			commands = {state: {}, exec : {}, value : {}},
 			settings = editor.settings,
+			formatter = editor.formatter,
 			bookmark;
 
 		/**
@@ -118,11 +119,11 @@
 		};
 
 		function isFormatMatch(name) {
-			return editor.formatter.match(name);
+			return formatter.match(name);
 		};
 
 		function toggleFormat(name, value) {
-			editor.formatter.toggle(name, value ? {value : value} : undefined);
+			formatter.toggle(name, value ? {value : value} : undefined);
 		};
 
 		function storeSelection(type) {
@@ -190,7 +191,7 @@
 				// Remove all other alignments first
 				each('left,center,right,full'.split(','), function(name) {
 					if (align != name)
-						editor.formatter.remove('align' + name);
+						formatter.remove('align' + name);
 				});
 
 				toggleFormat('align' + align);
@@ -247,7 +248,7 @@
 			},
 
 			RemoveFormat : function(command) {
-				editor.formatter.remove(command);
+				formatter.remove(command);
 			},
 
 			mceBlockQuote : function(command) {
@@ -294,7 +295,7 @@
 
 			mceInsertContent : function(command, ui, value) {
 				var parser, serializer, parentNode, rootNode, fragment, args,
-					marker, nodeRect, viewPortRect, rng, node, node2, bookmarkHtml;
+					marker, nodeRect, viewPortRect, rng, node, node2, bookmarkHtml, viewportBodyElement;
 
 				// Setup parser and serializer
 				parser = editor.parser;
@@ -311,7 +312,7 @@
 					value += '{$caret}';
 
 				// Replace the caret marker with a span bookmark element
-				value = value.replace(/\{\$caret\}/, bookmarkHtml)
+				value = value.replace(/\{\$caret\}/, bookmarkHtml);
 
 				// Insert node maker where we will insert the new HTML and get it's parent
 				if (!selection.isCollapsed())
@@ -370,7 +371,14 @@
 
 					// Get the outer/inner HTML depending on if we are in the root and parser and serialize that
 					value = parentNode == rootNode ? rootNode.innerHTML : dom.getOuterHTML(parentNode);
-					value = serializer.serialize(parser.parse(value.replace(/<span (id="mce_marker"|id=mce_marker).+<\/span>/i, serializer.serialize(fragment))));
+					value = serializer.serialize(
+						parser.parse(
+							// Need to replace by using a function since $ in the contents would otherwise be a problem
+							value.replace(/<span (id="mce_marker"|id=mce_marker).+?<\/span>/i, function() {
+								return serializer.serialize(fragment);
+							})
+						)
+					);
 
 					// Set the inner/outer HTML depending on if we are in the root or not
 					if (parentNode == rootNode)
@@ -382,17 +390,15 @@
 				marker = dom.get('mce_marker');
 
 				// Scroll range into view scrollIntoView on element can't be used since it will scroll the main view port as well
-				if (!tinymce.isIE) {
-					// Scroll the node into view
-					nodeRect = dom.getRect(marker);
-					viewPortRect = dom.getViewPort(editor.getWin());
+				nodeRect = dom.getRect(marker);
+				viewPortRect = dom.getViewPort(editor.getWin());
 
-					// Check if node is out side the viewport if it is then scroll to it
-					if ((nodeRect.y > viewPortRect.y + viewPortRect.h || nodeRect.y < viewPortRect.y) ||
-						(nodeRect.x > viewPortRect.x + viewPortRect.w || nodeRect.x < viewPortRect.x)) {
-						editor.getBody().scrollLeft = nodeRect.x;
-						editor.getBody().scrollTop = nodeRect.y;
-					}
+				// Check if node is out side the viewport if it is then scroll to it
+				if ((nodeRect.y + nodeRect.h > viewPortRect.y + viewPortRect.h || nodeRect.y < viewPortRect.y) ||
+					(nodeRect.x > viewPortRect.x + viewPortRect.w || nodeRect.x < viewPortRect.x)) {
+					viewportBodyElement = tinymce.isIE ? editor.getDoc().documentElement : editor.getBody();
+					viewportBodyElement.scrollLeft = nodeRect.x;
+					viewportBodyElement.scrollTop = nodeRect.y - viewPortRect.h + 25;
 				}
 
 				// Move selection before marker and remove it
@@ -473,7 +479,7 @@
 			},
 
 			mceToggleFormat : function(command, ui, value) {
-				editor.formatter.toggle(value);
+				formatter.toggle(value);
 			},
 
 			InsertHorizontalRule : function() {
@@ -490,42 +496,27 @@
 			},
 
 			mceInsertLink : function(command, ui, value) {
-				var link = dom.getParent(selection.getNode(), 'a'), img, floatVal;
+				var anchor;
 
-				if (tinymce.is(value, 'string'))
+				if (typeof(value) == 'string')
 					value = {href : value};
+
+				anchor = dom.getParent(selection.getNode(), 'a');
 
 				// Spaces are never valid in URLs and it's a very common mistake for people to make so we fix it here.
 				value.href = value.href.replace(' ', '%20');
 
-				if (!link) {
-					// WebKit can't create links on float images for some odd reason so just remove it and restore it later
-					if (tinymce.isWebKit) {
-						img = dom.getParent(selection.getNode(), 'img');
+				// Remove existing links if there could be child links or that the href isn't specified
+				if (!anchor || !value.href) {
+					formatter.remove('link');
+				}		
 
-						if (img) {
-							floatVal = img.style.cssFloat;
-							img.style.cssFloat = null;
-						}
-					}
-
-					execNativeCommand('CreateLink', FALSE, 'javascript:mctmp(0);');
-
-					// Restore float value
-					if (floatVal)
-						img.style.cssFloat = floatVal;
-
-					each(dom.select("a[href='javascript:mctmp(0);']"), function(link) {
-						dom.setAttribs(link, value);
-					});
-				} else {
-					if (value.href)
-						dom.setAttribs(link, value);
-					else
-						editor.dom.remove(link, TRUE);
+				// Apply new link to selection
+				if (value.href) {
+					formatter.apply('link', value, anchor);
 				}
 			},
-			
+
 			selectAll : function() {
 				var root = dom.getRoot(), rng = dom.createRng();
 

@@ -37,7 +37,7 @@
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="tasks.classpath" loaderref="tasks.classpath.loader" />
 
 	<!-- Generate JS documentation -->
-	<target name="moxiedoc" depends="" description="Generates HTML documentation out of js source">
+	<target name="moxiedoc" depends="" description="Generates HTML documentation out of js source" unless="nomoxiedoc">
 		<mkdir dir="docs"/>
 		<delete quiet="true">
 			<fileset dir="docs/api" includes="**/*"/>
@@ -79,6 +79,8 @@
 			<fileset dir="${classes_dir}" includes="util/JSON.js" />
 			<fileset dir="${classes_dir}" includes="util/XHR.js" />
 			<fileset dir="${classes_dir}" includes="util/JSONRequest.js" />
+			<fileset dir="${classes_dir}" includes="util/VK.js" />
+			<fileset dir="${classes_dir}" includes="util/Quirks.js" />
 
 			<!-- tinymce.html.* -->
 			<fileset dir="${classes_dir}" includes="html/Entities.js" />

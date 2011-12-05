@@ -243,7 +243,7 @@
 		equals(DOM.encode('abc<>"&\'\u00e5\u00e4\u00f6'), 'abc&lt;&gt;&quot;&amp;&#39;\u00e5\u00e4\u00f6');
 	});
 
-	test('setGetAttrib', 11, function() {
+	test('setGetAttrib', 14, function() {
 		var dom;
 
 		DOM.add(document.body, 'div', {id : 'test'});
@@ -273,6 +273,10 @@
 		equals(DOM.getAttrib('test2', 'test1'), '1');
 		equals(DOM.getAttrib('test3', 'test2'), '2');
 		equals(DOM.getAttrib('test4', 'test1'), '1');
+
+		equals(DOM.getAttrib(document, 'test'), false);
+		equals(DOM.getAttrib(document, 'test', ''), '');
+		equals(DOM.getAttrib(document, 'test', 'x'), 'x');
 
 		DOM.remove('test');
 	});
@@ -584,14 +588,17 @@
 		DOM.remove('test');
 	});
 
-	test('isEmpty', 10, function() {
+	test('isEmpty', 13, function() {
 		DOM.schema = new tinymce.html.Schema(); // A schema will be added when used within a editor instance
 		DOM.add(document.body, 'div', {id : 'test'}, '');
 
 		ok(DOM.isEmpty(DOM.get('test')), 'No children');
 
 		DOM.setHTML('test', '<br />');
-		ok(!DOM.isEmpty(DOM.get('test')), 'Br child');
+		ok(DOM.isEmpty(DOM.get('test')), 'Br child');
+
+		DOM.setHTML('test', '<br /><br />');
+		ok(!DOM.isEmpty(DOM.get('test')), 'Br children');
 
 		DOM.setHTML('test', 'text');
 		ok(!DOM.isEmpty(DOM.get('test')), 'Text child');
@@ -616,6 +623,12 @@
 
 		DOM.setHTML('test', '<img src="x">');
 		ok(!DOM.isEmpty(DOM.get('test')), 'Non empty html with img element');
+
+		DOM.setHTML('test', '<span data-mce-bookmark="1"></span>');
+		ok(!DOM.isEmpty(DOM.get('test')), 'Span with bookmark attribute.');
+
+		DOM.setHTML('test', '<span data-mce-style="color:Red"></span>');
+		ok(DOM.isEmpty(DOM.get('test')), 'Span with data-mce attribute.');
 
 		DOM.remove('test');
 	});

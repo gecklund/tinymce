@@ -39,7 +39,7 @@
 					jarUrl = regex.exec(src)[1] + "JSRobot.jar";
 				}
 			}
-			var appletTag = '<applet archive="' + jarUrl + '" code="com.ephox.jsrobot.JSRobot" id="robotApplet" width="10" height="10" mayscript="true"><param name="mayscript" value="true" /></applet>';
+			var appletTag = '<applet archive="' + jarUrl + '" code="com.ephox.jsrobot.JSRobot" id="robotApplet" width="10" height="10" mayscript="true" initial_focus="false"><param name="initial_focus" value="false" /><param name="mayscript" value="true" /></applet>';
 			if (useDocumentWrite) {
 				document.write(appletTag);
 			} else {
@@ -51,10 +51,12 @@
 		},
 		
 		callback: function() {
-			this.initSymbols();
-			if (this.userCallback) {
+			if (window.robotUsesSymbols){
+				this.initSymbols();
+			} else if (this.userCallback) {
 				setTimeout(this.userCallback, 100);
 			}
+
 			return "Callback received.";
 		},
 
@@ -67,6 +69,10 @@
 				t.symbols = input.value;
 				t.ready = true;
 				document.body.removeChild(input);
+
+				if (t.userCallback) {
+					setTimeout(t.userCallback, 100);
+				}
 			}
 
 		  	this.appletAction(input, loadSymbolsFromInput, function() {
@@ -82,7 +88,10 @@
 			});
 		},
 
-		typeSymbol: function(symbol, callback, focusElement) {
+		typeSymbol: function(symbol, callback, focusElement) { 
+			if (!window.robotUsesSymbols) {
+				alert("need to define the attribute\nwindow.robotUsesSymbols\nbefore using the typeSymbol function.");
+			}
 			var t = this;
 
 			var symbolNumber = t.symbols.search("\\"+symbol);

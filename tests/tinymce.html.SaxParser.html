@@ -3,8 +3,9 @@
 <head>
 <title>tinymce.html.SaxParser tests</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen">
-<script type="text/javascript" src="qunit/qunit.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css" type="text/css" />
+<script src="http://code.jquery.com/qunit/qunit-git.js"></script>
+<script src="qunit/connector.js"></script>
 <script type="text/javascript" src="qunit/runner.js"></script>
 <script type="text/javascript" src="js/utils.js"></script>
 <script type="text/javascript" src="js/tiny_mce_loader.js"></script>
@@ -98,7 +99,7 @@ test('Parse elements', function() {
 	var parser = new tinymce.html.SaxParser(counter, schema);
 	writer.reset();
 	parser.parse('<b href=\'"&amp;<>\'></b>');
-	equals(writer.getContent(), '<b href="&quot;&amp;<>"></b>', 'Parse attributes with <> in them.');
+	equals(writer.getContent(), '<b href="&quot;&amp;&lt;&gt;"></b>', 'Parse attributes with <> in them.');
 	deepEqual(counter.counts, {start:1, end:1}, 'Parse attributes with <> in them (count).');
 
 	var counter = createCounter(writer);
@@ -155,14 +156,14 @@ test('Parse elements', function() {
 	writer.reset();
 	parser.parse('<myns:mytag>text</myns:mytag>');
 	equals(writer.getContent(), '<myns:mytag>text</myns:mytag>', 'Parse element with namespace.');
-	deepEqual(counter.counts, {start:1, end: 1, text:1}, 'Parse element with namespace counts.');
+	deepEqual(counter.counts, {start:1, text:1, end: 1}, 'Parse element with namespace counts.');
 
 	var counter = createCounter(writer);
 	var parser = new tinymce.html.SaxParser(counter, schema);
 	writer.reset();
 	parser.parse('<myns-mytag>text</myns-mytag>');
 	equals(writer.getContent(), '<myns-mytag>text</myns-mytag>', 'Parse element with dash name.');
-	deepEqual(counter.counts, {start:1, end:1, text:1}, 'Parse element with dash name counts.');
+	deepEqual(counter.counts, {start:1, text:1, end:1}, 'Parse element with dash name counts.');
 
 	var counter = createCounter(writer);
 	var parser = new tinymce.html.SaxParser(counter, schema);
@@ -182,8 +183,8 @@ test('Parse elements', function() {
 	var parser = new tinymce.html.SaxParser(counter, schema);
 	writer.reset();
 	parser.parse('text1<P>text2<B>tex<t3</p>te>xt4</b>text5');
-	equals(writer.getContent(), 'text1<p>text2<b>tex<t3 p="">te&gt;xt4</t3></b>text5</p>', 'Parse tag soup 3.');
-	deepEqual(counter.counts, {text: 5, start: 3, end: 3}, 'Parse tag soup 3 counts.');
+	equals(writer.getContent(), 'text1<p>text2<b>tex&lt;t3</b></p>te&gt;xt4text5', 'Parse tag soup 3.');
+	deepEqual(counter.counts, {text: 5, start: 2, end: 2}, 'Parse tag soup 3 counts.');
 
 	var counter = createCounter(writer);
 	var parser = new tinymce.html.SaxParser(counter, schema);
@@ -210,7 +211,7 @@ test('Parse elements', function() {
 	var parser = new tinymce.html.SaxParser(counter, schema);
 	writer.reset();
 	parser.parse('text1<span title="<test" data-test="test>"></span>');
-	equals(writer.getContent(), 'text1<span title="<test" data-test="test>"></span>', 'Parse element with </> in attributes.');
+	equals(writer.getContent(), 'text1<span title="&lt;test" data-test="test&gt;"></span>', 'Parse element with </> in attributes.');
 	deepEqual(counter.counts, {text: 1, start: 1, end: 1}, 'Parse element with </> in attributes counts.');
 
 	var counter = createCounter(writer);
@@ -473,6 +474,51 @@ test('Self closing', function() {
 	writer.reset();
 	parser.parse('<ul><li>1<li><b>2</b><li><em><b>3</b></em></ul>');
 	equals(writer.getContent(), '<ul><li>1</li><li><b>2</b></li><li><em><b>3</b></em></li></ul>', 'Parse list with self closing items.');
+});
+
+test('Preserve internal elements', function() {
+	expect(2);
+
+	var schema = new tinymce.html.Schema({valid_elements : 'b'});
+	var counter = createCounter(writer);
+	counter.validate = true;
+	var parser = new tinymce.html.SaxParser(counter, schema);
+	writer.reset();
+	parser.parse('<span id="id"><b>text</b></span><span id="id" data-mce-type="something"></span>');
+	equals(writer.getContent(), '<b>text</b><span id="id" data-mce-type="something"></span>', 'Preserve internal span element without any span schema rule.');
+
+	var schema = new tinymce.html.Schema({valid_elements : 'b,span[class]'});
+	var counter = createCounter(writer);
+	counter.validate = true;
+	var parser = new tinymce.html.SaxParser(counter, schema);
+	writer.reset();
+	parser.parse('<span id="id" class="class"><b>text</b></span><span id="id" data-mce-type="something"></span>');
+	equals(writer.getContent(), '<span class="class"><b>text</b></span><span id="id" data-mce-type="something"></span>', 'Preserve internal span element with a span schema rule.');
+});
+
+test('Remove internal elements', function() {
+	expect(2);
+
+	var schema = new tinymce.html.Schema({valid_elements : 'b'});
+	var counter = createCounter(writer);
+	counter.validate = true;
+	counter.remove_internals = true;
+	var parser = new tinymce.html.SaxParser(counter, schema);
+	writer.reset();
+	parser.parse('<span id="id"><b>text</b></span><span id="id" data-mce-type="something"></span>');
+	equals(writer.getContent(), '<b>text</b>', 'Remove internal span element without any span schema rule.');
+
+	var schema = new tinymce.html.Schema({valid_elements : 'b,span[class]'});
+	var counter = createCounter(writer);
+	counter.validate = true;
+	counter.remove_internals = true;
+	var parser = new tinymce.html.SaxParser(counter, schema);
+	writer.reset();
+	parser.parse('<span id="id" class="class"><b>text</b></span><span id="id" data-mce-type="something"></span>');
+	equals(writer.getContent(), '<span class="class"><b>text</b></span>', 'Remove internal span element with a span schema rule.');
+
+	// Reset
+	counter.remove_internals = false;
 });
 </script>
 </head>

@@ -55,8 +55,9 @@
 	};
 
 	// Firebug
-	if (query.debug)
+	if (query.debug && !("console" in window)) {
 		include('firebug/firebug-lite.js');
+	}
 
 	// Core ns
 	include('tinymce.js');
@@ -73,6 +74,8 @@
 	include('util/JSONP.js');
 	include('util/XHR.js');
 	include('util/JSONRequest.js');
+	include('util/VK.js');
+	include('util/Quirks.js');
 
 	// tinymce.html.*
 	include('html/Entities.js');
