@@ -542,10 +542,10 @@
 							if (prevName !== "span" || prev.attr('data-mce-type') !== 'bookmark') {
 								// Found a non BR element
 								if (prevName !== "br"){
-									node = null;//FSFix [10998] Single <br> at the end of the body shouldn't be removed
+									node = null; //FSFix [10998]
 									break;
 								}
-
+	
 								// Found another br it's a <br><br> structure then don't remove anything
 								if (prevName === 'br') {
 									node = null;

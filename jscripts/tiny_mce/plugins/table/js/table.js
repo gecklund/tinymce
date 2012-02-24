@@ -61,6 +61,49 @@ function insertTable() {
 		dom.setAttrib(elm, 'cellPadding', cellpadding, true);
 		dom.setAttrib(elm, 'cellSpacing', cellspacing, true);
 
+		//set rows an columns +/-
+		aRows = elm.rows;
+		rowCount = aRows.length;
+		
+		//add rows
+		while(rows > rowCount){
+			inst.selection.setCursorLocation(aRows[rowCount - 1], 0);
+			inst.execCommand('mceTableInsertRowAfter');
+			rowCount++;
+		}
+		
+		//remove rows
+		while(rows < rowCount){
+			inst.selection.setCursorLocation(aRows[rowCount - 1], 0);
+			inst.execCommand('mceTableDeleteRow');
+			rowCount--;
+		}
+		
+		
+		colCount = 0;
+		for (var i=0; i<aRows.length; i++)
+			if (aRows[i].cells.length > colCount){
+				aCols = aRows[i].cells;
+				colCount = aRows[i].cells.length;
+			}
+		
+		//add rows
+		while(cols > colCount){
+			inst.selection.setCursorLocation(aCols[colCount - 1], 0);
+			inst.execCommand('mceTableInsertColAfter');
+			colCount++;
+		}
+		
+		//remove rows
+		while(cols < colCount){
+			inst.selection.setCursorLocation(aCols[colCount - 1], 0);
+			inst.execCommand('mceTableDeleteCol');
+			colCount--;
+		}
+		
+		//inst.execCommand('mceTableInsertColAfter');
+		return false;
+		
 		if (!isCssSize(border)) {
 			dom.setAttrib(elm, 'border', border);
 		} else {
@@ -374,8 +417,8 @@ function init() {
 
 	// Disable some fields in update mode
 	if (action == "update") {
-		formObj.cols.disabled = true;
-		formObj.rows.disabled = true;
+		//formObj.cols.disabled = true;
+		//formObj.rows.disabled = true;
 	}
 }
 

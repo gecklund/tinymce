@@ -38,6 +38,7 @@ font[face=mceinline] {font-family:inherit !important}
 *[contentEditable]:focus {outline:0}
 
 .mceItemMedia {border:1px dotted #cc0000; background-position:center; background-repeat:no-repeat; background-color:#ffffcc}
+.mceItemFSMediaNew {border:1px dotted #000000 !important; background-color:#b7ccf2 !important; background-image:url(../../img/html5.png) !important}
 .mceItemShockWave {background-image:url(../../img/shockwave.gif)}
 .mceItemFlash {background-image:url(../../img/flash.gif)}
 .mceItemQuickTime {background-image:url(../../img/quicktime.gif)}

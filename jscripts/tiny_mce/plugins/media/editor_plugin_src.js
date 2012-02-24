@@ -117,7 +117,7 @@
 				ed.schema.addValidElements('object[id|style|width|height|align|classid|codebase|*],param[name|value],embed[id|style|width|height|type|src|*],video[*],audio[*],source[*]');
 
 				// Convert video elements to image placeholder
-				ed.parser.addNodeFilter('object,embed,video,audio,script,iframe', function(nodes) {
+				ed.parser.addNodeFilter('object,embed,video,audio,script,iframe,div', function(nodes) {
 					var i = nodes.length;
 
 					while (i--)
@@ -145,7 +145,7 @@
 					});
 				}
 
-				// Add contect menu if it's loaded
+				// Add context menu if it's loaded
 				if (ed && ed.plugins.contextmenu) {
 					ed.plugins.contextmenu.onContextMenu.add(function(plugin, menu, element) {
 						if (element.nodeName === 'IMG' && element.className.indexOf('mceItemMedia') !== -1)
@@ -232,7 +232,7 @@
 		 * Converts the JSON data object to an img node.
 		 */
 		dataToImg : function(data, force_absolute) {
-			var self = this, editor = self.editor, baseUri = editor.documentBaseURI, sources, attrs, img, i;
+			var self = this, editor = self.editor, baseUri = editor.documentBaseURI, sources, attrs, img, i, cssClasses;
 
 			data.params.src = self.convertUrl(data.params.src, force_absolute);
 
@@ -248,6 +248,12 @@
 				for (i = 0; i < sources.length; i++)
 					sources[i].src = self.convertUrl(sources[i].src, force_absolute);
 			}
+			
+			// Keep the classes the same but append a new mceItemFSMediaNew class that will override the color scheme using !important
+			if (self.getType(data.type).name == 'FSMedia')
+				cssClasses = 'mceItemMedia mceItem' + self.getType(data.type).name + ' mceItemFSMediaNew';
+			else
+				cssClasses = 'mceItemMedia mceItem' + self.getType(data.type).name;
 
 			img = self.editor.dom.create('img', {
 				id : data.id,
@@ -256,7 +262,7 @@
 				hspace : data.hspace,
 				vspace : data.vspace,
 				src : self.editor.theme.url + '/img/trans.gif',
-				'class' : 'mceItemMedia mceItem' + self.getType(data.type).name,
+				'class' : cssClasses,
 				'data-mce-json' : JSON.serialize(data, "'")
 			});
 
@@ -336,7 +342,7 @@
 		imgToObject : function(node, args) {
 			var self = this, editor = self.editor, video, object, embed, iframe, name, value, data,
 				source, sources, params, param, typeItem, i, item, mp4Source, replacement,
-				posterSrc, style, audio;
+				posterSrc, style, audio, divContainer;
 
 			// Adds the flash player
 			function addPlayer(video_src, poster_src) {
@@ -526,6 +532,55 @@
 
 				data.params.src = '';
 			}
+			
+			// Add FSMedia div for page replacement
+			if (typeItem.name === 'FSMedia') {
+				
+				var divEmbed, divText;
+				
+				// Parse out the media data from the flashvars
+				var channel = 0, category = 0, group = 0;
+				if (data.params.flashvars) {
+					var flashvars = data.params.flashvars.split('&');
+					for (var x = 0; x < flashvars.length; x++) {
+						var property = flashvars[x].split('=')[0];
+						switch(property) {
+							case 'mediaChanID':
+								channel = parseInt(flashvars[x].split('=')[1]);
+								break;
+							case 'mediaCatID':
+								category = parseInt(flashvars[x].split('=')[1]);
+								break;
+							case 'mediaGroupID':
+								group = parseInt(flashvars[x].split('=')[1]);
+								break;
+						}
+					}
+				}
+				
+				// Create new div elements
+				divContainer = new Node('div', 1).attr({
+					id: node.attr('id'),
+					width: node.attr('width'),
+					height: node.attr('height'),
+					style: 'width:' + node.attr('width') + 'px;',
+					'class': 'fsMediaEmbedContainer'
+				});
+				divEmbed = new Node('div', 1).attr({
+					'class': 'fsMediaEmbed'
+				});
+				divText = new Node('#text', 3);
+				divText.raw = true;
+				divText.value = channel + ':' + category + ':' + group;
+				
+				// Append the channel:category:group text to the embed div
+				divEmbed.append(divText);
+				
+				// Append the embed div to the container div
+				divContainer.append(divEmbed);
+				
+				data.params.src = '';
+			}
 
 			// Do we have a params src then we can generate object
 			if (data.params.src) {
@@ -635,7 +690,7 @@
 				}
 			}
 
-			var n = video || audio || object || embed;
+			var n = video || audio || object || embed || divContainer;
 			if (n)
 				node.replace(n);
 			else
@@ -652,11 +707,15 @@
 		 * {'params':{'flashvars':'something','quality':'high','src':'someurl'}, 'video':{'sources':[{src: 'someurl', type: 'video/mp4'}]}}
 		 */
 		objectToImg : function(node) {
+			
+			// We only bother with divs if they have the fsMediaEmbedContainer class
+			if (node.name === 'div' && (!node.attr('class') || node.attr('class').indexOf('fsMediaEmbedContainer') === -1)) return;
+			
 			var object, embed, video, iframe, img, name, id, width, height, align, style, i, html,
 				param, params, source, sources, data, type, lookup = this.lookup,
 				matches, attrs, urlConverter = this.editor.settings.url_converter,
 				urlConverterScope = this.editor.settings.url_converter_scope,
-				hspace, vspace, align, bgcolor;
+				hspace, vspace, align, bgcolor, divContainer;
 
 			function getInnerHTML(node) {
 				return new tinymce.html.Serializer({
@@ -756,6 +815,30 @@
 			if (node.name === 'iframe') {
 				iframe = node;
 				type = 'Iframe';
+			}
+			
+			// Embedded FSMedia divs
+			if (node.name === 'div') {
+				divContainer = node;
+				type = 'FSMedia';
+			}
+			
+			// FSMedia
+			if (divContainer) {
+				// Get width/height
+				width = width || divContainer.attr('width');
+				height = height || divContainer.attr('height');
+				
+				// Parse out the data from the inside text of the first child element (the embed div's inner text)
+				html = getInnerHTML(divContainer.firstChild);
+				channel = parseInt(html.split(':')[0]);
+				category = parseInt(html.split(':')[1]);
+				group = parseInt(html.split(':')[2]);
+				
+				// Setup data object
+				data.params.flashvars = 'mediaChanID=' + channel + '&mediaCatID=' + category + '&mediaGroupID=' + group;
+				
+				//alert(data.params.flashvars);
 			}
 
 			if (object) {
@@ -886,11 +969,15 @@
 			data.vspace = vspace;
 			data.align = align;
 			data.bgcolor = bgcolor;
+			
+			if (divContainer) cssClasses = 'mceItemMedia mceItem' + (type || 'Flash') + ' mceItemFSMediaNew';
+			else cssClasses = 'mceItemMedia mceItem' + (type || 'Flash');
 
 			// Set width/height of placeholder
 			img.attr({
 				id : id,
-				'class' : 'mceItemMedia mceItem' + (type || 'Flash'),
+				//'class' : 'mceItemMedia mceItem' + (type || 'Flash'),
+				'class': cssClasses,
 				style : style,
 				width : width || (node.name == 'audio' ? "300" : "320"),
 				height : height || (node.name == 'audio' ? "32" : "240"),

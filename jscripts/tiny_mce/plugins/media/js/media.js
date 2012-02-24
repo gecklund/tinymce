@@ -125,7 +125,20 @@
 		},
 
 		preview : function() {
-			get('prev').innerHTML = this.editor.plugins.media.dataToHtml(this.data, true);
+			var html = this.editor.plugins.media.dataToHtml(this.data, true);
+			// Search for #:#:# in the returned content. This signals that it is embedded media from Media Manager.
+			var matches = html.match(/[0-9]+:[0-9]+:[0-9]+/g);
+			if (matches && matches.length == 1) {
+				// Parse out the channel, category and group and then embed an iframe to load the player
+				var channel = parseInt(matches[0].split(':')[0]);
+				var category = parseInt(matches[0].split(':')[1]);
+				var group = parseInt(matches[0].split(':')[2]);
+				var flashVars = 'mediaChanID=' + channel + '&mediaCatID=' + category + '&mediaGroupID=' + group;
+				get('prev').innerHTML = '<iframe frameborder="0" width="320" height="240" scrolling="no" style="border:0;" src="../../../../../../cf_media/embed.cfm?' + flashVars + '"></iframe>';
+			}
+			else {
+				get('prev').innerHTML = html;
+			}
 		},
 
 		moveStates : function(to_form, field) {
@@ -445,6 +458,7 @@
 			}
 			var html = "";
 			html += '<select id="media_type" name="media_type" onchange="Media.formToData(\'type\');">';
+			html += option("fsmedia");
 			html += option("video");
 			html += option("audio");
 			html += option("flash");
@@ -478,7 +492,7 @@
 	window.openMediaBrowser = function(){
 		var random = Math.floor(Math.random() * 101),
 			basePath = window.location.href.replace('editor/tinymce/jscripts/tiny_mce/plugins/media/media.htm','');
-		window.open(basePath+'cf_media2/adminpicker.cfm?embed=true&random='+random,'mediaPicker','width=450,height=450,scrollbar=yes,location=no');
+		window.open(basePath+'cf_media/adminpicker.cfm?embed=true&random='+random,'mediaPicker','width=450,height=450,scrollbar=yes,location=no');
 	}
 	
 	/*
@@ -491,7 +505,9 @@
 		get('fsmedia_flashvars').value = flashVars;	
 		get('flash_flashvars').value = flashVars;	
 		get('id').value = (new Date()).getTime();//solves some issues in ie
-		get('src').value = basePath+'cf_media2/mediaPlayer.swf'; //decodeURI(mediaLabel);
+		//get('src').value = basePath+'cf_media2/mediaPlayer.swf'; //decodeURI(mediaLabel);
+		get('src').value = '';
+		get('prev').innerHTML = '<iframe frameborder="0" width="320" height="240" scrolling="no" style="border:0;" src="../../../../../../cf_media/embed.cfm?' + flashVars + '"></iframe>';
 	}
 
 	tinyMCEPopup.requireLangPack();

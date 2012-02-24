@@ -1,5 +1,5 @@
 /**
- * This script contains embed functions for common plugins. This scripts are complety free to use for any purpose.
+ * This script contains embed functions for common plugins. This scripts are completely free to use for any purpose.
  */
 
 function writeFsMedia(p) {
