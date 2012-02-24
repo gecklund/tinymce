@@ -102,7 +102,7 @@ function insertTable() {
 		}
 		
 		//inst.execCommand('mceTableInsertColAfter');
-		return false;
+		//return false;
 		
 		if (!isCssSize(border)) {
 			dom.setAttrib(elm, 'border', border);
