@@ -509,11 +509,11 @@
 			if (format) {
 				if (node) {
 					if (node.nodeType) {
-						rng = dom.createRng();
-						rng.setStartBefore(node);
-						rng.setEndAfter(node);
+					rng = dom.createRng();
+					rng.setStartBefore(node);
+					rng.setEndAfter(node);
 						applyRngStyle(expandRng(rng, formatList), null, true);
-					} else {
+				} else {
 						applyRngStyle(node, null, true);
 					}
 				} else {
@@ -741,10 +741,10 @@
 			// Handle node
 			if (node) {
 				if (node.nodeType) {
-					rng = dom.createRng();
-					rng.setStartBefore(node);
-					rng.setEndAfter(node);
-					removeRngStyle(rng);
+				rng = dom.createRng();
+				rng.setStartBefore(node);
+				rng.setEndAfter(node);
+				removeRngStyle(rng);
 				} else {
 					removeRngStyle(node);
 				}
@@ -1114,7 +1114,7 @@
 					for (sibling = parent[siblingName]; sibling; sibling = sibling[siblingName]) {
 						if (!isBookmarkNode(sibling) && !isWhiteSpaceNode(sibling)) {
 							return parent;
-						}
+					}
 					}
 
 					// Check if we can move up are we at root level or body level
@@ -1169,7 +1169,7 @@
 				endContainer = endContainer.previousSibling || endContainer;
 
 				if (endContainer.nodeType == 3)
-					endOffset = endContainer.length;
+				endOffset = endContainer.length;
 			}
 
 			if (format[0].inline) {
@@ -1280,7 +1280,7 @@
 			if (format[0].inline || format[0].block_expand) {
 				if (!format[0].inline || (startContainer.nodeType != 3 || startOffset === 0)) {
 					startContainer = findParentContainer(true);
-				}
+			}
 
 				if (!format[0].inline || (endContainer.nodeType != 3 || endOffset === endContainer.nodeValue.length)) {
 					endContainer = findParentContainer();
@@ -1834,7 +1834,7 @@
 					if (!node) {
 						while (node = dom.get(caretContainerId)) {
 							removeCaretContainer(node, false);
-						}
+			}
 					}
 				} else {
 					rng = selection.getRng(true);
@@ -1850,7 +1850,7 @@
 						child = findFirstTextNode(node);
 						child = child.deleteData(0, 1);
 						dom.remove(node, 1);
-					}
+			}
 
 					selection.setRng(rng);
 				}
@@ -1873,7 +1873,7 @@
 				// Expand to word is caret is in the middle of a text node and the char before/after is a alpha numeric character
 				if (text && offset > 0 && offset < text.length && /\w/.test(text.charAt(offset)) && /\w/.test(text.charAt(offset - 1))) {
 					// Get bookmark of caret position
-					bookmark = selection.getBookmark();
+						bookmark = selection.getBookmark();
 
 					// Collapse bookmark range (WebKit)
 					rng.collapse(true);
@@ -1886,7 +1886,7 @@
 					apply(name, vars, rng);
 
 					// Move selection back to caret position
-					selection.moveToBookmark(bookmark);
+						selection.moveToBookmark(bookmark);
 				} else {
 					if (!caretContainer || textNode.nodeValue !== invisibleChar) {
 						caretContainer = createCaretContainer(true);
@@ -1919,13 +1919,13 @@
 					}
 
 					node = node.parentNode;
-				}
+									}
 
 				while (node) {
 					if (matchNode(node, name, vars)) {
 						formatNode = node;
 						break;
-					}
+							}
 
 					if (node.nextSibling) {
 						hasContentAfter = true;
@@ -1989,13 +1989,13 @@
 						dom.setAttrib(nodes[i], 'data-mce-bogus', '1');
 					}
 				}
-			});
+						});
 
 			// Remove caret container on mouse up and on key up
 			tinymce.each('onMouseUp onKeyUp'.split(' '), function(name) {
 				ed[name].addToTop(function() {
 					removeCaretContainer();
-				});
+					});
 			});
 
 			// Remove caret container on keydown and it's a backspace, enter or left/right arrow keys

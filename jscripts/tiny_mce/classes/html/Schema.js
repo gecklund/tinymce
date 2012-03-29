@@ -452,7 +452,7 @@
 
 				if (element.pattern.test(name))
 					return element;
-			}
+		}
 		};
 
 		if (!settings.valid_elements) {

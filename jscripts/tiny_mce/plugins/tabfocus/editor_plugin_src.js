@@ -28,7 +28,7 @@
 						return e.nodeName==="BODY" || (e.type != 'hidden' &&
 							!(e.style.display == "none") &&
 							!(e.style.visibility == "hidden") && canSelectRecursive(e.parentNode));
-					}
+				    }
 					function canSelectInOldIe(el) {
 						return el.attributes["tabIndex"].specified || el.nodeName == "INPUT" || el.nodeName == "TEXTAREA";
 					}

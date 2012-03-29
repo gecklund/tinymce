@@ -100,11 +100,11 @@
 		} else if (isList(e1)) {
 			return (e1.tagName === e2.tagName && (allowDifferentListStyles || e1.style.listStyleType === e2.style.listStyleType)) || isListForIndent(e2);
 		} else return mergeParagraphs && e1.tagName === 'P' && e2.tagName === 'P';
-	}
+		}
 
 	function isListForIndent(e) {
 		var firstLI = skipWhitespaceNodesForwards(e.firstChild), lastLI = skipWhitespaceNodesBackwards(e.lastChild);
-		return firstLI && lastLI && isList(e) && firstLI === lastLI && (isList(firstLI) || firstLI.style.listStyleType === 'none' || containsOnlyAList(firstLI));
+		return firstLI && lastLI && isList(e) && firstLI === lastLI && (isList(firstLI) || firstLI.style.listStyleType === 'none'  || containsOnlyAList(firstLI));
 	}
 
 	function containsOnlyAList(e) {
@@ -189,7 +189,7 @@
 
 			function isInEmptyListItem() {
 				return ed.selection.isCollapsed() && isEmptyListItem(getLi());
-			}
+				}
 
 			function getLi() {
 				var n = ed.selection.getStart();
@@ -375,7 +375,7 @@
 				if (state == LIST_TABBING) {
 					ed.execCommand(e.shiftKey ? 'Outdent' : 'Indent', true, null);
                     state = LIST_UNKNOWN;
-                    return Event.cancel(e);
+					return Event.cancel(e);
 				} else if (state == LIST_EMPTY_ITEM) {
 					var li = getLi();
 					var shouldOutdent =  ed.settings.list_outdent_on_enter === true || e.shiftKey;
@@ -397,8 +397,8 @@
 						// Gecko does not create a paragraph outdenting inside a TD so default behaviour is cancelled and we outdent ourselves
 						ed.execCommand('Outdent');
 						return Event.cancel(e);
-                    }
-				}
+							}
+						}
 			});
 
 			function fixListItem(parent, reference) {
@@ -409,7 +409,7 @@
 				ed.selection.setCursorLocation(n, 0);
 				// repaint to remove rendering artifact. only visible when creating new list
 				ed.execCommand('mceRepaint');
-			}
+					}
 
 			function fixIndentedListItemForGecko(ed, e) {
 				if (isEnter(e)) {
@@ -454,8 +454,8 @@
 							var elements = listElements(list, li);
 							ed.execCommand("Outdent", false, elements);
 							ed.undoManager.add();
-							return Event.cancel(e);
-						}
+					return Event.cancel(e);
+				}
 					}
 				}
 			}
@@ -478,7 +478,7 @@
 
 		applyList: function(targetListType, oppositeListType) {
 			var t = this, ed = t.ed, dom = ed.dom, applied = [], hasSameType = false, hasOppositeType = false, hasNonList = false, actions,
-					selectedBlocks = ed.selection.getSelectedBlocks();
+				selectedBlocks = ed.selection.getSelectedBlocks();
 
 			function cleanupBr(e) {
 				if (e && e.tagName === 'BR') {
@@ -507,9 +507,9 @@
 					});
 					if (li) {
 						if (li.tagName === 'LI' && (element.tagName === 'P' || selectedBlocks.length > 1)) {
-							dom.split(li.parentNode.parentNode, li.parentNode);
-						}
-						attemptMergeWithAdjacent(li.parentNode, true);
+						dom.split(li.parentNode.parentNode, li.parentNode);
+					}
+					attemptMergeWithAdjacent(li.parentNode, true);
 					}
 					return;
 				} else {
@@ -542,7 +542,7 @@
 					li = dom.create('li');
 					start.parentNode.insertBefore(li, start);
 				}
-                while (n && n != end) {
+				while (n && n != end) {
 					tmp = n.nextSibling;
 					li.appendChild(n);
 					n = tmp;
@@ -555,7 +555,7 @@
 
 			function processBrs(element, callback) {
 				var startSection, previousBR, END_TO_START = 3, START_TO_END = 1,
-						breakElements = 'br,ul,ol,p,div,h1,h2,h3,h4,h5,h6,table,blockquote,address,pre,form,center,dl';
+					breakElements = 'br,ul,ol,p,div,h1,h2,h3,h4,h5,h6,table,blockquote,address,pre,form,center,dl';
 
 				function isAnyPartSelected(start, end) {
 					var r = dom.createRng(), sel;
@@ -713,11 +713,11 @@
 
 			function createWrapList(element) {
 				var wrapItem = createWrapItem(element),
-						list = dom.getParent(element, 'ol,ul'),
-						listType = list.tagName,
-						listStyle = dom.getStyle(list, 'list-style-type'),
-						attrs = {},
-						wrapList;
+					list = dom.getParent(element, 'ol,ul'),
+					listType = list.tagName,
+					listStyle = dom.getStyle(list, 'list-style-type'),
+					attrs = {},
+					wrapList;
 				if (listStyle !== '') {
 					attrs.style = 'list-style-type: ' + listStyle + ';';
 				}
@@ -858,8 +858,8 @@
 
 			// we avoid doing repaint in a table as this will move the caret out of the table in Firefox 3.6
 			if (!isInTable()) {
-				// Avoids table or image handles being left behind in Firefox.
-				t.ed.execCommand('mceRepaint');
+			// Avoids table or image handles being left behind in Firefox.
+			t.ed.execCommand('mceRepaint');
 			}
 		},
 

@@ -245,7 +245,7 @@
 					rng.pasteHTML('<span id="__mce_tmp">_</span>' + content);
 					self.dom.remove('__mce_tmp');
 				} else
-					rng.pasteHTML(content);
+				rng.pasteHTML(content);
 			}
 
 			// Dispatch set content event

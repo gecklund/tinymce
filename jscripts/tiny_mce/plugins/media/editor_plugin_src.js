@@ -300,7 +300,7 @@
 				data.type = this.getType(img.attr('class')).name.toLowerCase();
 				
 				//if there's a reference to FS mediaplayer.swf; this type is actually fsmedia
-				if(typeof(data.params.src) === 'string' && data.params.src === 'cf_media2/mediaPlayer.swf'){
+				if(typeof(data.params.src) === 'string' && data.params.src === 'cf_media/mediaPlayer.swf'){
 					data.type = 'fsmedia';
 				}
 
@@ -567,14 +567,21 @@
 					'class': 'fsMediaEmbedContainer'
 				});
 				divEmbed = new Node('div', 1).attr({
+					style: 'fsMediaChannel:' + channel + '; fsMediaCategory:' + category + '; fsMediaGroup:' + group + ';',
 					'class': 'fsMediaEmbed'
 				});
-				divText = new Node('#text', 3);
-				divText.raw = true;
-				divText.value = channel + ':' + category + ':' + group;
+				spanInner = new Node('span', 1).attr({
+					style: 'display:inline-block; width:' + node.attr('width') + 'px; height:' + node.attr('height') + 'px; border:1px solid;'
+				});
+				textNode = new Node('#text', 3);
+				textNode.raw = true;
+				textNode.value = 'The media player will be embedded here when the page reloads.';
 				
-				// Append the channel:category:group text to the embed div
-				divEmbed.append(divText);
+				// Append the text to the inner span
+				spanInner.append(textNode);
+				
+				// Append the inner span to the embed div
+				divEmbed.append(spanInner);
 				
 				// Append the embed div to the container div
 				divContainer.append(divEmbed);
@@ -830,15 +837,21 @@
 				height = height || divContainer.attr('height');
 				
 				// Parse out the data from the inside text of the first child element (the embed div's inner text)
-				html = getInnerHTML(divContainer.firstChild);
-				channel = parseInt(html.split(':')[0]);
-				category = parseInt(html.split(':')[1]);
-				group = parseInt(html.split(':')[2]);
+				style = divContainer.firstChild.attr('style');
+				if (!style) style = '';
+				matchChannel = style.match(/fsMediaChannel:[0-9]+/gi);
+				matchCategory = style.match(/fsMediaCategory:[0-9]+/gi);
+				matchGroup = style.match(/fsMediaGroup:[0-9]+/gi);
+				if (matchChannel) channel = parseInt(matchChannel[0].replace('fsMediaChannel:', ''));
+				else channel = 0;
+				if (matchCategory) category = parseInt(matchCategory[0].replace('fsMediaCategory:', ''));
+				else category = 0;
+				if (matchGroup) group = parseInt(matchGroup[0].replace('fsMediaGroup:', ''));
+				else group = 0;
 				
 				// Setup data object
 				data.params.flashvars = 'mediaChanID=' + channel + '&mediaCatID=' + category + '&mediaGroupID=' + group;
 				
-				//alert(data.params.flashvars);
 			}
 
 			if (object) {
@@ -920,14 +933,14 @@
 
 			if (video) {
 				if (node.name === 'video')
-					type = lookup.video.name;
+				type = lookup.video.name;
 				else if (node.name === 'audio')
 					type = lookup.audio.name;
 			}
 
 			if (object && !type){
 				//fsmedia uses same clsid as flash so check the src
-				if(object.attr('data') === 'cf_media2/mediaPlayer.swf'){
+				if(object.attr('data') === 'cf_media/mediaPlayer.swf'){
 					type = 'FSMedia';
 				}else{
 					type = (lookupAttribute(object, 'clsid') || lookupAttribute(object, 'classid') || lookupAttribute(object, 'type') || {}).name;

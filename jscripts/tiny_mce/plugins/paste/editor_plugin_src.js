@@ -839,7 +839,7 @@
 				}
 
 				ed.execCommand('mceInsertContent', false, content);
-			}
+							}
 		},
 
 		/**

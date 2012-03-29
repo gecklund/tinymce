@@ -195,7 +195,7 @@
 						startOffset = 0;
 					} else {
 						endOffset = 0;
-					}
+				}
 				}
 			} else {
 				// Split startContainer text node if needed

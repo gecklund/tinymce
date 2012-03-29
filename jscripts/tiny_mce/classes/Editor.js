@@ -1193,7 +1193,7 @@
 
 			// Load the CSS by injecting them into the HTML this will reduce "flicker"
 			for (i = 0; i < t.contentCSS.length; i++) {
-				t.iframeHTML += '<link type="text/css" rel="stylesheet" href="' + t.contentCSS[i] + '" />';
+					t.iframeHTML += '<link type="text/css" rel="stylesheet" href="' + t.contentCSS[i] + '" />';
 			}
 
 			bi = s.body_id || 'tinymce';
@@ -1309,24 +1309,24 @@
 
 			// Force anchor names closed, unless the setting "allow_html_in_named_anchor" is explicitly included.
 			if (!t.settings.allow_html_in_named_anchor) {
-				t.parser.addAttributeFilter('name', function(nodes, name) {
-					var i = nodes.length, sibling, prevSibling, parent, node;
+			t.parser.addAttributeFilter('name', function(nodes, name) {
+				var i = nodes.length, sibling, prevSibling, parent, node;
 	
-					while (i--) {
-						node = nodes[i];
-						if (node.name === 'a' && node.firstChild) {
-							parent = node.parent;
+				while (i--) {
+					node = nodes[i];
+					if (node.name === 'a' && node.firstChild) {
+						parent = node.parent;
 	
-							// Move children after current node
-							sibling = node.lastChild;
-							do {
-								prevSibling = sibling.prev;
-								parent.insert(sibling, node);
-								sibling = prevSibling;
-							} while (sibling);
-						}
+						// Move children after current node
+						sibling = node.lastChild;
+						do {
+							prevSibling = sibling.prev;
+							parent.insert(sibling, node);
+							sibling = prevSibling;
+						} while (sibling);
 					}
-				});
+				}
+			});
 			}
 
 			// Convert src and href into data-mce-src, data-mce-href and data-mce-style
@@ -1340,11 +1340,11 @@
 
 					// Add internal attribute if we need to we don't on a refresh of the document
 					if (!node.attributes.map[internalName]) {	
-						if (name === "style")
+					if (name === "style")
 							node.attr(internalName, dom.serializeStyle(dom.parseStyle(value), node.name));
-						else
+					else
 							node.attr(internalName, t.convertURL(value, name, node.name));
-					}
+				}
 				}
 			});
 
@@ -3217,9 +3217,9 @@
 						if (target !== t.getBody()) {
 							t.dom.setAttrib(target, "style", null);
 
-							each(template, function(attr) {
-								target.setAttributeNode(attr.cloneNode(true));
-							});
+						each(template, function(attr) {
+							target.setAttributeNode(attr.cloneNode(true));
+						});
 						}
 					};
 				}

@@ -126,13 +126,13 @@
 
 		preview : function() {
 			var html = this.editor.plugins.media.dataToHtml(this.data, true);
-			// Search for #:#:# in the returned content. This signals that it is embedded media from Media Manager.
-			var matches = html.match(/[0-9]+:[0-9]+:[0-9]+/g);
+			// Search for "fsMediaChannel:#; fsMediaCategory:#; fsMediaGroup:#;" in the returned content. This signals that it is embedded media from Media Manager.
+			var matches = html.match(/fsMediaChannel:[0-9]+;\s*fsMediaCategory:[0-9]+;\s*fsMediaGroup:[0-9]+;/gi);
 			if (matches && matches.length == 1) {
 				// Parse out the channel, category and group and then embed an iframe to load the player
-				var channel = parseInt(matches[0].split(':')[0]);
-				var category = parseInt(matches[0].split(':')[1]);
-				var group = parseInt(matches[0].split(':')[2]);
+				var channel = parseInt(matches[0].match(/fsMediaChannel:[0-9]+/gi)[0].replace('fsMediaChannel:', ''));
+				var category = parseInt(matches[0].match(/fsMediaCategory:[0-9]+/gi)[0].replace('fsMediaCategory:', ''));
+				var group = parseInt(matches[0].match(/fsMediaGroup:[0-9]+/gi)[0].replace('fsMediaGroup:', ''));
 				var flashVars = 'mediaChanID=' + channel + '&mediaCatID=' + category + '&mediaGroupID=' + group;
 				get('prev').innerHTML = '<iframe frameborder="0" width="320" height="240" scrolling="no" style="border:0;" src="../../../../../../cf_media/embed.cfm?' + flashVars + '"></iframe>';
 			}
@@ -406,7 +406,9 @@
 					this.dataToForm();
 					this.panel = '';
 				}
-
+				if (field == 'type' && getVal('media_type') == 'fsmedia') {
+					if (getVal('src') == '') setVal('src', 'Default Main Gallery');
+				}
 				this.moveStates(false, field);
 				this.preview();
 			}
@@ -505,8 +507,7 @@
 		get('fsmedia_flashvars').value = flashVars;	
 		get('flash_flashvars').value = flashVars;	
 		get('id').value = (new Date()).getTime();//solves some issues in ie
-		//get('src').value = basePath+'cf_media2/mediaPlayer.swf'; //decodeURI(mediaLabel);
-		get('src').value = '';
+		get('src').value = decodeURI(mediaLabel);
 		get('prev').innerHTML = '<iframe frameborder="0" width="320" height="240" scrolling="no" style="border:0;" src="../../../../../../cf_media/embed.cfm?' + flashVars + '"></iframe>';
 	}
 
